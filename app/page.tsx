@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { createMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = createMetadata({
-  title: "B2B Technology & AI Partner",
+  title: "Frontier Systems B2B Technology & AI Partner",
   description:
     "Enterprise AI solutions, systems architecture, and mission-critical software engineering for global industry leaders.",
   path: "/",

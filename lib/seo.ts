@@ -20,15 +20,15 @@ export const siteConfig = {
 };
 
 export interface PageSeoProps {
-  title?: string;
-  description?: string;
-  path?: string;
-  image?: string;
-  noIndex?: boolean;
-  type?: "website" | "article";
-  publishedTime?: string;
-  modifiedTime?: string;
-  authors?: string[];
+  title?: string | undefined;
+  description?: string | undefined;
+  path?: string | undefined;
+  image?: string | undefined;
+  noIndex?: boolean | undefined;
+  type?: "website" | "article" | undefined;
+  publishedTime?: string | undefined;
+  modifiedTime?: string | undefined;
+  authors?: string[] | undefined;
 }
 
 /**
@@ -167,9 +167,9 @@ export function getCaseStudyJsonLd({
   title: string;
   description: string;
   url: string;
-  image?: string;
-  datePublished?: string;
-  dateModified?: string;
+  image?: string | undefined;
+  datePublished?: string | undefined;
+  dateModified?: string | undefined;
 }) {
   return {
     "@context": "https://schema.org",
