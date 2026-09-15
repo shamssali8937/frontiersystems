@@ -1,0 +1,26 @@
+// Prisma schema — Frontier Systems
+// https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// PLACEHOLDER MODELS
+// Full schema will be defined in a later phase.
+// ============================================================
+
+/// Tracks general-purpose audit/health records.
+/// Replace / extend with actual domain models.
+model HealthCheck {
+  id        String   @id @default(cuid())
+  status    String
+  checkedAt DateTime @default(now())
+
+  @@map("health_checks")
+}

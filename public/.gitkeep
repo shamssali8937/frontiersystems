@@ -1,0 +1,9 @@
+This directory holds static public assets served at the root of the domain.
+
+Examples:
+  public/favicon.ico
+  public/og-image.png
+  public/robots.txt
+  public/sitemap.xml
+  public/fonts/             (self-hosted fonts, if any)
+  public/images/            (static images that are NOT managed by Sanity)

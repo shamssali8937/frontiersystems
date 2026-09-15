@@ -1,0 +1,6 @@
+# Placeholder for tests
+# Unit, integration, and end-to-end tests will be placed in this directory.
+# Recommended structure:
+#   tests/unit/          - Jest unit tests
+#   tests/integration/   - API integration tests
+#   tests/e2e/           - Playwright end-to-end tests

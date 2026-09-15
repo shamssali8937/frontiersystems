@@ -1,0 +1,72 @@
+# ============================================================
+# Frontier Systems — .gitignore
+# ============================================================
+
+# ----- Next.js -----
+.next/
+out/
+
+# ----- Node -----
+node_modules/
+.pnpm-store/
+pnpm-lock.yaml.bak
+
+# ----- Production build -----
+build/
+dist/
+
+# ----- Environment variables (NEVER commit secrets) -----
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+.env.staging
+# Keep .env.example (it is committed intentionally)
+
+# ----- Prisma -----
+prisma/migrations/**/migration_lock.toml
+
+# ----- Sanity -----
+.sanity/
+
+# ----- TypeScript incremental compilation -----
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# ----- Testing -----
+coverage/
+.nyc_output/
+test-results/
+playwright-report/
+
+# ----- Logs -----
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ----- OS -----
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ----- Editors -----
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+.idea/
+*.swp
+*.swo
+*.suo
+*.user
+
+# ----- Vercel -----
+.vercel/
+
+# ----- Misc -----
+*.pem
+.cache/

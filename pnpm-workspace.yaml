@@ -1,0 +1,11 @@
+ignoredBuiltDependencies:
+  - sharp
+  - unrs-resolver
+
+# Allow these packages to run their postinstall scripts.
+# Prisma requires native binary compilation; esbuild requires native build.
+onlyBuiltDependencies:
+  - "@prisma/engines"
+  - "@prisma/client"
+  - prisma
+  - esbuild
