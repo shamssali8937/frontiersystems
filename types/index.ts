@@ -1,7 +1,13 @@
 /**
  * Root type re-exports.
  */
-export type { ApiResponse, ApiSuccessResponse, ApiErrorResponse, PaginationMeta, PaginatedResponse } from "./api";
+export type {
+  ApiResponse,
+  ApiSuccessResponse,
+  ApiErrorResponse,
+  ApiErrorCode,
+} from "./api";
+export { jsonSuccess, jsonError } from "./api";
 export type {
   SanityImage,
   SanitySeo,
