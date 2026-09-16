@@ -30,26 +30,32 @@ const securityHeaders = [
   // Disable browser features not needed by this app
   {
     key: "Permissions-Policy",
-    value: "camera=(), microphone=(), geolocation=()",
+    value: "camera=(), microphone=(), geolocation=(), browsing-topics=()",
   },
   // Cross-origin policies
   { key: "X-DNS-Prefetch-Control", value: "on" },
+  { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
+  { key: "Cross-Origin-Resource-Policy", value: "same-origin" },
   // Content Security Policy
   {
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",
-      // Sanity CDN
+      // Sanity CDN and data blobs
       "img-src 'self' data: blob: https://cdn.sanity.io",
-      // Allow inline styles (Tailwind CSS) and required script sources
+      // Tailwind CSS and Google Fonts
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-      "font-src 'self' https://fonts.gstatic.com",
+      "font-src 'self' https://fonts.gstatic.com data:",
       // Cloudflare Turnstile + development eval support for Next.js Fast Refresh & React devtools
       `script-src 'self' 'unsafe-inline' ${isDev ? "'unsafe-eval'" : ""} https://challenges.cloudflare.com`.trim(),
-      "frame-src https://challenges.cloudflare.com",
-      // WebGL for Three.js
+      "frame-src 'self' https://challenges.cloudflare.com",
+      // WebGL and web workers for Three.js
       "worker-src 'self' blob:",
-      `connect-src 'self' ${isDev ? "ws: wss: http: https:" : "https://api.sanity.io https://cdn.sanity.io"}`.trim(),
+      `connect-src 'self' https://challenges.cloudflare.com ${isDev ? "ws: wss: http: https:" : "https://api.sanity.io https://*.sanity.io https://cdn.sanity.io"}`.trim(),
+      "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "frame-ancestors 'none'",
     ].join("; "),
   },
 ];

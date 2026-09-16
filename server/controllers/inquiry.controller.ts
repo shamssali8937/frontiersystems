@@ -13,11 +13,16 @@ import {
   ServiceError,
 } from "@/server/services/inquiry.service";
 import { authenticateAdmin } from "@/server/auth/admin.auth";
+import { enforcePermission } from "@/server/auth/authorization";
 import { getClientIp } from "@/lib/security/ip";
+import { validateOrigin } from "@/lib/security/origin";
+import { checkRateLimit, RateLimitPolicies, getRateLimitHeaders } from "@/lib/security/rate-limit";
 import { jsonSuccess, jsonError } from "@/types/api";
+import { logger } from "@/lib/logger";
 
 /**
  * Maps any error into a safe standardized JSON error response.
+ * Never exposes stack traces or sensitive database details to clients.
  */
 function handleControllerError(err: unknown) {
   if (err instanceof ZodError) {
@@ -25,11 +30,10 @@ function handleControllerError(err: unknown) {
       "VALIDATION_ERROR",
       "Invalid request parameters",
       422,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (err as any).issues?.map((e: any) => ({
-        path: Array.isArray(e.path) ? e.path.join(".") : String(e.path),
-        message: e.message,
-      })) ?? [],
+      err.issues.map((issue) => ({
+        path: issue.path.join("."),
+        message: issue.message,
+      })),
     );
   }
 
@@ -37,7 +41,10 @@ function handleControllerError(err: unknown) {
     return jsonError(err.code, err.message, err.statusCode, err.details);
   }
 
-  console.error("[Controller] Unexpected Error:", err);
+  logger.error("Unhandled controller error", {
+    error: err instanceof Error ? err.message : String(err),
+  });
+
   return jsonError(
     "INTERNAL_SERVER_ERROR",
     "An unexpected error occurred. Please try again later.",
@@ -48,15 +55,45 @@ function handleControllerError(err: unknown) {
 /**
  * POST /api/inquiries
  * Public inquiry submission.
+ * Protected by Origin validation, Rate limiting, Turnstile CAPTCHA, and XSS sanitization.
  */
 export async function handleCreateInquiry(request: NextRequest) {
+  // 1. Origin / CSRF check
+  const originCheck = validateOrigin(request);
+  if (!originCheck.valid) {
+    return jsonError("FORBIDDEN", originCheck.reason ?? "Forbidden origin", 403);
+  }
+
+  // 2. Rate limiting check (5 submissions per 15 minutes)
+  const clientIp = getClientIp(request);
+  const rateLimitStatus = checkRateLimit("inquiry", clientIp, RateLimitPolicies.INQUIRY_SUBMISSION);
+
+  if (!rateLimitStatus.allowed) {
+    const response = jsonError(
+      "RATE_LIMITED",
+      `Too many inquiry submissions. Please try again in ${rateLimitStatus.retryAfterSeconds} seconds.`,
+      429,
+    );
+    const headers = getRateLimitHeaders(rateLimitStatus);
+    for (const [k, v] of Object.entries(headers)) {
+      response.headers.set(k, v);
+    }
+    return response;
+  }
+
   try {
     const rawBody = await request.json().catch(() => ({}));
     const validatedData = createInquirySchema.parse(rawBody);
-    const clientIp = getClientIp(request);
 
     const result = await submitInquiry(validatedData, clientIp);
-    return jsonSuccess(result, 201);
+    const response = jsonSuccess(result, 201);
+
+    const headers = getRateLimitHeaders(rateLimitStatus);
+    for (const [k, v] of Object.entries(headers)) {
+      response.headers.set(k, v);
+    }
+
+    return response;
   } catch (err) {
     return handleControllerError(err);
   }
@@ -64,7 +101,7 @@ export async function handleCreateInquiry(request: NextRequest) {
 
 /**
  * GET /api/inquiries/[id]
- * Public / token check for inquiry status.
+ * Public / client status lookup. Exposes sanitized status only.
  */
 export async function handleGetInquiry(
   _request: NextRequest,
@@ -72,11 +109,11 @@ export async function handleGetInquiry(
 ) {
   try {
     const inquiry = await getInquiry(params.id);
-    // Public view only exposes non-sensitive status info
     return jsonSuccess(
       {
         id: inquiry.id,
         status: inquiry.status,
+        service: inquiry.service,
         createdAt: inquiry.createdAt,
       },
       200,
@@ -88,12 +125,17 @@ export async function handleGetInquiry(
 
 /**
  * PATCH /api/inquiries/[id]
- * Public / user update if authorized.
+ * Public / client status update if authorized.
  */
 export async function handleUpdateInquiry(
   request: NextRequest,
   params: { id: string },
 ) {
+  const originCheck = validateOrigin(request);
+  if (!originCheck.valid) {
+    return jsonError("FORBIDDEN", originCheck.reason ?? "Forbidden origin", 403);
+  }
+
   try {
     const rawBody = await request.json().catch(() => ({}));
     const validatedData = updateInquirySchema.parse(rawBody);
@@ -111,8 +153,16 @@ export async function handleUpdateInquiry(
  */
 export async function handleListAdminInquiries(request: NextRequest) {
   const auth = authenticateAdmin(request);
-  if (!auth.authenticated) {
+  if (!auth.authenticated || !auth.user) {
+    if (auth.error === "RATE_LIMITED") {
+      return jsonError("RATE_LIMITED", "Too many failed authentication attempts. Access locked.", 429);
+    }
     return jsonError("UNAUTHORIZED", "Admin authorization required", 401);
+  }
+
+  const permCheck = enforcePermission(auth.user, "inquiries:read");
+  if (!permCheck.authorized) {
+    return jsonError("FORBIDDEN", permCheck.reason ?? "Forbidden", 403);
   }
 
   try {
@@ -135,8 +185,16 @@ export async function handleGetAdminInquiry(
   params: { id: string },
 ) {
   const auth = authenticateAdmin(request);
-  if (!auth.authenticated) {
+  if (!auth.authenticated || !auth.user) {
+    if (auth.error === "RATE_LIMITED") {
+      return jsonError("RATE_LIMITED", "Too many failed authentication attempts. Access locked.", 429);
+    }
     return jsonError("UNAUTHORIZED", "Admin authorization required", 401);
+  }
+
+  const permCheck = enforcePermission(auth.user, "inquiries:read");
+  if (!permCheck.authorized) {
+    return jsonError("FORBIDDEN", permCheck.reason ?? "Forbidden", 403);
   }
 
   try {
@@ -155,9 +213,29 @@ export async function handleUpdateAdminInquiry(
   request: NextRequest,
   params: { id: string },
 ) {
+  const originCheck = validateOrigin(request);
+  if (!originCheck.valid) {
+    return jsonError("FORBIDDEN", originCheck.reason ?? "Forbidden origin", 403);
+  }
+
   const auth = authenticateAdmin(request);
-  if (!auth.authenticated) {
+  if (!auth.authenticated || !auth.user) {
+    if (auth.error === "RATE_LIMITED") {
+      return jsonError("RATE_LIMITED", "Too many failed authentication attempts. Access locked.", 429);
+    }
     return jsonError("UNAUTHORIZED", "Admin authorization required", 401);
+  }
+
+  const permCheck = enforcePermission(auth.user, "inquiries:write");
+  if (!permCheck.authorized) {
+    return jsonError("FORBIDDEN", permCheck.reason ?? "Forbidden", 403);
+  }
+
+  // Rate limit admin write operations: 30 per minute
+  const clientIp = getClientIp(request);
+  const rateLimitStatus = checkRateLimit("admin_write", clientIp, RateLimitPolicies.ADMIN_WRITE);
+  if (!rateLimitStatus.allowed) {
+    return jsonError("RATE_LIMITED", "Admin write rate limit exceeded", 429);
   }
 
   try {

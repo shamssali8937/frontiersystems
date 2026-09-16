@@ -11,23 +11,35 @@ if (typeof process.loadEnvFile === "function") {
 }
 
 import { runApiTests } from "./api/inquiries.test";
+import { runSecurityTests } from "./security/security.test";
 
 async function main() {
   console.log("=========================================");
   console.log("Running Frontier Systems API Architecture Tests");
   console.log("=========================================\n");
 
-  const { passed, failed, results } = await runApiTests();
-
-  for (const res of results) {
+  const apiRes = await runApiTests();
+  for (const res of apiRes.results) {
     console.log(res);
   }
 
   console.log("\n=========================================");
-  console.log(`Summary: ${passed} passed, ${failed} failed`);
+  console.log("Running Frontier Systems Enterprise Security Tests");
+  console.log("=========================================\n");
+
+  const secRes = await runSecurityTests();
+  for (const res of secRes.results) {
+    console.log(res);
+  }
+
+  const totalPassed = apiRes.passed + secRes.passed;
+  const totalFailed = apiRes.failed + secRes.failed;
+
+  console.log("\n=========================================");
+  console.log(`Total Summary: ${totalPassed} passed, ${totalFailed} failed`);
   console.log("=========================================");
 
-  if (failed > 0) {
+  if (totalFailed > 0) {
     process.exit(1);
   }
 }
