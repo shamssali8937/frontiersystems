@@ -13,6 +13,7 @@ if (typeof process.loadEnvFile === "function") {
 import { runApiTests } from "./api/inquiries.test";
 import { runSecurityTests } from "./security/security.test";
 import { runUploadSecurityTests } from "./upload-security.test";
+import { runEmailNotificationTests } from "./email-notification.test";
 
 async function main() {
   console.log("=========================================");
@@ -35,8 +36,17 @@ async function main() {
 
   const uploadRes = await runUploadSecurityTests();
 
-  const totalPassed = apiRes.passed + secRes.passed + uploadRes.passed;
-  const totalFailed = apiRes.failed + secRes.failed + uploadRes.failed;
+  console.log("\n=========================================");
+  console.log("Running Frontier Systems Lead Notification Tests");
+  console.log("=========================================\n");
+
+  const emailRes = await runEmailNotificationTests();
+  for (const res of emailRes.results) {
+    console.log(res);
+  }
+
+  const totalPassed = apiRes.passed + secRes.passed + uploadRes.passed + emailRes.passed;
+  const totalFailed = apiRes.failed + secRes.failed + uploadRes.failed + emailRes.failed;
 
   console.log("\n=========================================");
   console.log(`Global Suite Summary: ${totalPassed} passed, ${totalFailed} failed`);

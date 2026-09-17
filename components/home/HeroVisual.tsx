@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { HeroFallback } from "@/components/three/HeroFallback";
 
 const DynamicHeroScene = dynamic(
-  () => import("@/components/three/HeroScene").then((mod) => mod.HeroScene),
+  () => import("@/components/three/SystemCoreScene").then((mod) => mod.SystemCoreScene),
   {
     ssr: false,
     loading: () => <HeroFallback />,
@@ -31,8 +31,7 @@ export function HeroVisual() {
     <div className="relative w-full max-w-lg lg:max-w-none mx-auto">
       {/* Accessible Alternative Text Outside the Canvas */}
       <div className="sr-only">
-        Interactive 3D technical visualization representing Frontier Systems&apos; high-assurance distributed
-        systems topology, autonomous AI node orchestration, and real-time enterprise computing architecture.
+        Interactive 3D technical visualization representing Frontier Systems&apos; high-assurance distributed systems topology, autonomous AI node orchestration, and real-time enterprise computing architecture.
       </div>
 
       {/* Visual Canvas Container with aria-hidden */}

@@ -152,14 +152,18 @@ const isSanityConfigured = Boolean(
 );
 
 /**
- * Fetch all published solutions.
+ * Fetch all published solutions with 1-hour ISR revalidation.
  */
 export async function getSolutions(): Promise<SanitySolution[]> {
   if (!isSanityConfigured) {
     return Object.values(fallbackSolutions);
   }
   try {
-    const data = await sanityClient.fetch<SanitySolution[]>(SOLUTIONS_QUERY);
+    const data = await sanityClient.fetch<SanitySolution[]>(
+      SOLUTIONS_QUERY,
+      {},
+      { next: { revalidate: 3600 } },
+    );
     return data && data.length > 0 ? data : Object.values(fallbackSolutions);
   } catch {
     return Object.values(fallbackSolutions);
@@ -167,14 +171,18 @@ export async function getSolutions(): Promise<SanitySolution[]> {
 }
 
 /**
- * Fetch single solution by slug.
+ * Fetch single solution by slug with 1-hour ISR revalidation.
  */
 export async function getSolutionBySlug(slug: string): Promise<SanitySolution | null> {
   if (!isSanityConfigured) {
     return fallbackSolutions[slug] ?? null;
   }
   try {
-    const data = await sanityClient.fetch<SanitySolution | null>(SOLUTION_BY_SLUG_QUERY, { slug });
+    const data = await sanityClient.fetch<SanitySolution | null>(
+      SOLUTION_BY_SLUG_QUERY,
+      { slug },
+      { next: { revalidate: 3600 } },
+    );
     return data ?? fallbackSolutions[slug] ?? null;
   } catch {
     return fallbackSolutions[slug] ?? null;
@@ -190,7 +198,9 @@ export async function getAllSolutionSlugs(): Promise<string[]> {
   }
   try {
     const data = await sanityClient.fetch<Array<{ slug: { current: string } }>>(
-      `*[_type == "solution" && defined(slug.current)]{ slug }`
+      `*[_type == "solution" && defined(slug.current)]{ slug }`,
+      {},
+      { next: { revalidate: 3600 } },
     );
     const slugs = data.map((item) => item.slug.current);
     return slugs.length > 0 ? slugs : Object.keys(fallbackSolutions);
@@ -200,28 +210,36 @@ export async function getAllSolutionSlugs(): Promise<string[]> {
 }
 
 /**
- * Fetch all published case studies.
+ * Fetch all published case studies with 1-hour ISR revalidation.
  */
 export async function getCaseStudies(): Promise<SanityCaseStudy[]> {
   if (!isSanityConfigured) {
     return [];
   }
   try {
-    return await sanityClient.fetch<SanityCaseStudy[]>(CASE_STUDIES_QUERY);
+    return await sanityClient.fetch<SanityCaseStudy[]>(
+      CASE_STUDIES_QUERY,
+      {},
+      { next: { revalidate: 3600 } },
+    );
   } catch {
     return [];
   }
 }
 
 /**
- * Fetch single case study by slug.
+ * Fetch single case study by slug with 1-hour ISR revalidation.
  */
 export async function getCaseStudyBySlug(slug: string): Promise<SanityCaseStudy | null> {
   if (!isSanityConfigured) {
     return null;
   }
   try {
-    return await sanityClient.fetch<SanityCaseStudy | null>(CASE_STUDY_BY_SLUG_QUERY, { slug });
+    return await sanityClient.fetch<SanityCaseStudy | null>(
+      CASE_STUDY_BY_SLUG_QUERY,
+      { slug },
+      { next: { revalidate: 3600 } },
+    );
   } catch {
     return null;
   }
@@ -236,7 +254,9 @@ export async function getAllCaseStudySlugs(): Promise<string[]> {
   }
   try {
     const data = await sanityClient.fetch<Array<{ slug: { current: string } }>>(
-      `*[_type == "caseStudy" && defined(slug.current)]{ slug }`
+      `*[_type == "caseStudy" && defined(slug.current)]{ slug }`,
+      {},
+      { next: { revalidate: 3600 } },
     );
     return data.map((item) => item.slug.current);
   } catch {

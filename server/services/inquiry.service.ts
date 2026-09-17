@@ -38,19 +38,27 @@ export interface PublicInquiryResponse {
   message: string;
 }
 
+import {
+  sendLeadInquiryNotifications,
+  buildLeadEmailPayloadFromInquiry,
+} from "@/server/services/email.service";
+
 /**
  * Trigger external or internal notifications (email, Slack webhook, audit dispatch).
  * Safely isolated so notification errors never abort inquiry persistence.
  */
-async function triggerInquiryNotification(inquiry: Inquiry, attachmentsCount: number): Promise<void> {
+async function triggerInquiryNotification(
+  inquiry: Inquiry,
+  attachmentsCount: number,
+  options?: {
+    timeline?: string | null | undefined;
+    budget?: string | null | undefined;
+    technicalDetails?: string | undefined;
+  },
+): Promise<void> {
   try {
-    logger.info("Dispatching lead inquiry notification to engineering desk", {
-      inquiryId: inquiry.id,
-      email: inquiry.email,
-      service: inquiry.service,
-      attachmentsCount,
-    });
-    // In production, SMTP transport or webhook dispatch executes here.
+    const payload = buildLeadEmailPayloadFromInquiry(inquiry, attachmentsCount, options);
+    await sendLeadInquiryNotifications(payload);
   } catch (err) {
     logger.warn("Notification dispatch failed (non-fatal)", {
       error: err instanceof Error ? err.message : String(err),
@@ -205,7 +213,11 @@ export async function submitInquiry(
   });
 
   // 9. Trigger Notification
-  await triggerInquiryNotification(record, verifiedAttachments.length);
+  await triggerInquiryNotification(record, verifiedAttachments.length, {
+    timeline: input.timeline,
+    budget: input.custom_budget,
+    technicalDetails: input.technical_details,
+  });
 
   // 10. Return Safe Public Response
   return {
