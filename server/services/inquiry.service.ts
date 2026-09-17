@@ -9,6 +9,7 @@ import {
 import { checkRateLimit, RateLimitPolicies } from "@/lib/security/rate-limit";
 import { verifyTurnstileToken } from "@/lib/security/turnstile";
 import { getUploadMetadata, StoredUploadResult } from "@/server/services/upload.service";
+import { linkAttachmentsToInquiry } from "@/server/repositories/attachment.repository";
 import type {
   CreateInquiryInput,
   UpdateInquiryInput,
@@ -186,6 +187,14 @@ export async function submitInquiry(
     internalNotes: JSON.stringify(internalMetadata),
     ipHash: clientIp ? `ip_${clientIp.slice(0, 8)}` : null,
   });
+
+  // 7b. Link attachments to inquiry in database
+  if (verifiedAttachments.length > 0) {
+    await linkAttachmentsToInquiry(
+      record.id,
+      verifiedAttachments.map((a) => a.id),
+    );
+  }
 
   // 8. Record Lead Activity
   logger.info("Lead activity recorded", {

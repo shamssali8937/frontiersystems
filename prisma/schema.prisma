@@ -31,12 +31,33 @@ model Inquiry {
   status        InquiryStatus @default(NEW)
   internalNotes String?
   ipHash        String?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  attachments   InquiryAttachment[]
 
   @@index([status])
   @@index([createdAt])
   @@map("inquiries")
+}
+
+model InquiryAttachment {
+  id                String    @id @default(cuid())
+  inquiryId         String?   @map("inquiry_id")
+  storageKey        String    @unique @map("storage_key")
+  originalFilename  String    @map("original_filename")
+  sanitizedFilename String    @map("sanitized_filename")
+  mimeType          String    @map("mime_type")
+  sizeBytes         Int       @map("size_bytes")
+  sha256            String    @map("sha256")
+  storageProvider   String    @default("cloudinary") @map("storage_provider")
+  storageBucket     String    @default("frontiersystems/inquiries") @map("storage_bucket")
+  createdAt         DateTime  @default(now()) @map("created_at")
+
+  inquiry           Inquiry?  @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
+
+  @@index([inquiryId])
+  @@index([storageKey])
+  @@map("inquiry_attachments")
 }
 
 model HealthCheck {

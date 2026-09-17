@@ -12,6 +12,7 @@ if (typeof process.loadEnvFile === "function") {
 
 import { runApiTests } from "./api/inquiries.test";
 import { runSecurityTests } from "./security/security.test";
+import { runUploadSecurityTests } from "./upload-security.test";
 
 async function main() {
   console.log("=========================================");
@@ -32,11 +33,13 @@ async function main() {
     console.log(res);
   }
 
-  const totalPassed = apiRes.passed + secRes.passed;
-  const totalFailed = apiRes.failed + secRes.failed;
+  const uploadRes = await runUploadSecurityTests();
+
+  const totalPassed = apiRes.passed + secRes.passed + uploadRes.passed;
+  const totalFailed = apiRes.failed + secRes.failed + uploadRes.failed;
 
   console.log("\n=========================================");
-  console.log(`Total Summary: ${totalPassed} passed, ${totalFailed} failed`);
+  console.log(`Global Suite Summary: ${totalPassed} passed, ${totalFailed} failed`);
   console.log("=========================================");
 
   if (totalFailed > 0) {

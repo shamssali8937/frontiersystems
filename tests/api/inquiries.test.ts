@@ -38,6 +38,12 @@ export async function runApiTests(): Promise<{ passed: number; failed: number; r
     update: (args: { where: { id: string }; data: Prisma.InquiryUpdateInput }) => Promise<Inquiry>;
   };
   const delegate = prisma.inquiry as unknown as InquiryDelegate;
+  const origFindUnique = delegate.findUnique;
+  const origCreate = delegate.create;
+  const origFindMany = delegate.findMany;
+  const origCount = delegate.count;
+  const origUpdate = delegate.update;
+
   delegate.findUnique = async ({ where }) => mockDb.get(where.id) || null;
   delegate.create = async ({ data }) => {
     const item: Inquiry = {
@@ -233,6 +239,13 @@ export async function runApiTests(): Promise<{ passed: number; failed: number; r
     assert(res.status === 200, "PATCH /api/admin/inquiries/[id] (successful update returns 200)");
     assert(body.data?.status === "UNDER_REVIEW", "PATCH /api/admin/inquiries/[id] (status successfully updated)");
   }
+
+  // Restore real Prisma delegates
+  delegate.findUnique = origFindUnique;
+  delegate.create = origCreate;
+  delegate.findMany = origFindMany;
+  delegate.count = origCount;
+  delegate.update = origUpdate;
 
   return { passed, failed, results };
 }
