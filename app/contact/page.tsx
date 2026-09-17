@@ -3,77 +3,97 @@ import { createMetadata } from "@/lib/seo";
 import { PageContainer } from "@/components/layout";
 import { Container } from "@/components/ui/Container";
 import { Heading } from "@/components/ui/Heading";
-import { Badge } from "@/components/ui/Badge";
+import { Eyebrow } from "@/components/ui/Eyebrow";
+import { ContactForm } from "@/components/contact/ContactForm";
 
 export const metadata: Metadata = createMetadata({
-  title: "Contact — Initiate Enterprise Consultation",
+  title: "Enterprise Contact & Consultation",
   description:
-    "Get in touch with Frontier Systems to discuss technology consulting, AI architecture, bespoke software engineering, or enterprise automation programs.",
+    "Initiate an enterprise architecture consultation with Frontier Systems. Connect directly with our London engineering leadership or submit your technical specifications.",
   path: "/contact",
 });
 
 export default function ContactPage() {
   return (
     <PageContainer>
-      <section className="py-20 lg:py-28">
+      <section className="py-20 lg:py-28 bg-[#0B0D0E]">
         <Container size="2xl">
-          <div className="max-w-3xl space-y-4 mb-16">
-            <Badge variant="accent">Inquiries</Badge>
-            <Heading as="h1" variant="h1" className="tracking-tight">
+          {/* Header */}
+          <div className="max-w-3xl space-y-4 mb-14">
+            <Eyebrow>ENTERPRISE INQUIRIES // ARCHITECTURAL CONSULTATION</Eyebrow>
+            <Heading as="h1" variant="h1" className="tracking-tight text-3xl sm:text-4xl lg:text-5xl font-semibold">
               Initiate an Enterprise Architecture Consultation
             </Heading>
-            <p className="text-[#A6AAAC] text-lg leading-relaxed">
-              We collaborate with enterprise executives, technical leaders, and innovative organizations.
-              Submit your project objectives or reach out to our London team directly.
+            <p className="text-[#A6AAAC] text-base lg:text-lg leading-relaxed">
+              We collaborate with enterprise executives, technical founders, and systems leaders.
+              Complete our structured inquiry form below, or contact our London engineering office directly.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-            <div className="lg:col-span-2 p-8 lg:p-10 bg-[#111416] border border-[#292D30] rounded-sm space-y-6">
-              <h2 className="text-xl font-semibold text-[#F5F5F3]">
-                Project Consultation Request
-              </h2>
-              <p className="text-sm text-[#A6AAAC] leading-relaxed">
-                Our team reviews project inquiries within one business day. All discussions
-                are held under mutual non-disclosure and architectural evaluation standards.
-              </p>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
+            {/* Left: Progressive 4-Step Form */}
+            <div className="lg:col-span-8">
+              <ContactForm />
+            </div>
 
-              <div className="p-6 bg-[#171A1C] border border-[#292D30] rounded-sm space-y-4">
+            {/* Right: Direct Channels & Engineering Assurance */}
+            <aside className="lg:col-span-4 space-y-6" aria-label="Direct Contact and Credentials">
+              {/* Direct Mailto Channel (SRS Mandatory Requirement: hello@frontiersystems.co) */}
+              <div className="p-8 bg-[#111416] border border-[#292D30] rounded-sm space-y-4">
                 <div className="text-xs font-mono text-[#63C7D9] uppercase tracking-wider">
                   Direct Inquiries Channel
                 </div>
-                <div className="text-sm text-[#F5F5F3] font-mono">
-                  inquiries@frontiersystems.com
+                <div>
+                  <a
+                    href="mailto:hello@frontiersystems.co"
+                    className="text-lg font-mono font-medium text-[#F5F5F3] hover:text-[#63C7D9] underline underline-offset-4 decoration-[#63C7D9]/40 hover:decoration-[#63C7D9] transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#63C7D9]"
+                  >
+                    hello@frontiersystems.co
+                  </a>
                 </div>
-                <p className="text-xs text-[#6E7376]">
-                  Encrypted communications, RFP documentation, and architectural briefs welcome.
-                </p>
-              </div>
-            </div>
-
-            <div className="space-y-6">
-              <div className="p-8 bg-[#111416] border border-[#292D30] rounded-sm space-y-4">
-                <h3 className="text-sm font-semibold uppercase tracking-wider text-[#F5F5F3]">
-                  London Headquarters
-                </h3>
-                <p className="text-sm text-[#A6AAAC]">
-                  Frontier Systems Ltd.<br />
-                  London, United Kingdom
-                </p>
-                <div className="pt-2 text-xs text-[#6E7376]">
-                  Global delivery across UK, EMEA, and North America.
-                </div>
-              </div>
-
-              <div className="p-8 bg-[#111416] border border-[#292D30] rounded-sm space-y-3">
-                <h3 className="text-sm font-semibold uppercase tracking-wider text-[#F5F5F3]">
-                  Security & Assurance
-                </h3>
                 <p className="text-xs text-[#A6AAAC] leading-relaxed">
-                  Enterprise-grade data isolation, encrypted transit, and role-based access control standard across all engagements.
+                  Encrypted technical briefs, bilateral non-disclosure requests, and formal RFPs can be transmitted directly to our inbox.
                 </p>
+                <div className="pt-2 text-[11px] font-mono text-[#6E7376]">
+                  Visible direct contact channel &bull; Never concealed
+                </div>
               </div>
-            </div>
+
+              {/* London Engineering Office */}
+              <div className="p-8 bg-[#111416] border border-[#292D30] rounded-sm space-y-3">
+                <div className="text-xs font-mono text-[#A6AAAC] uppercase tracking-wider">
+                  Engineering Headquarters
+                </div>
+                <div className="text-sm font-medium text-[#F5F5F3]">
+                  Frontier Systems Ltd.
+                </div>
+                <address className="not-italic text-xs text-[#A6AAAC] leading-relaxed">
+                  London, United Kingdom<br />
+                  Global Delivery Across UK, EMEA, and North America
+                </address>
+              </div>
+
+              {/* Engagement Assurance */}
+              <div className="p-8 bg-[#111416] border border-[#292D30] rounded-sm space-y-4 text-xs font-mono">
+                <div className="text-[#63C7D9] uppercase tracking-wider">
+                  Engagement Guarantees
+                </div>
+                <ul className="space-y-3 text-[#A6AAAC]" role="list">
+                  <li className="flex items-start gap-2.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#4EBA87] mt-1.5 shrink-0" />
+                    <span>24–48 hour technical review turnaround SLA</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#63C7D9] mt-1.5 shrink-0" />
+                    <span>Standard bilateral NDA protection before code audit</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#A6AAAC] mt-1.5 shrink-0" />
+                    <span>Direct access to senior systems architects</span>
+                  </li>
+                </ul>
+              </div>
+            </aside>
           </div>
         </Container>
       </section>
