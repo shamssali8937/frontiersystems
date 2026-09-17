@@ -127,3 +127,10 @@ export function getRateLimitHeaders(status: RateLimitStatus): Record<string, str
 
   return headers;
 }
+
+/**
+ * Resets in-memory rate-limit stores (used for testing teardown).
+ */
+export function resetRateLimits(): void {
+  stores.clear();
+}

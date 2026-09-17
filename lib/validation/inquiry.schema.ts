@@ -11,60 +11,112 @@ export const inquiryStatusEnum = z.enum([
 
 export type InquiryStatusType = z.infer<typeof inquiryStatusEnum>;
 
-/** Schema for public inquiry submissions with automatic sanitization */
-export const createInquirySchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .transform(sanitizeText)
-    .pipe(
-      z
-        .string()
-        .min(2, "Name must be at least 2 characters")
-        .max(100, "Name must not exceed 100 characters"),
-    ),
-  email: z
-    .string()
-    .trim()
-    .email("Please provide a valid email address")
-    .max(255, "Email must not exceed 255 characters")
-    .toLowerCase(),
-  company: z
-    .string()
-    .trim()
-    .transform(sanitizeText)
-    .pipe(z.string().max(100, "Company name must not exceed 100 characters"))
-    .optional(),
-  phone: z
-    .string()
-    .trim()
-    .transform(sanitizeText)
-    .pipe(z.string().max(30, "Phone number must not exceed 30 characters"))
-    .optional(),
-  service: z
-    .string()
-    .trim()
-    .transform(sanitizeText)
-    .pipe(z.string().max(100, "Service name must not exceed 100 characters"))
-    .optional(),
-  budget: z
-    .string()
-    .trim()
-    .transform(sanitizeText)
-    .pipe(z.string().max(50, "Budget range must not exceed 50 characters"))
-    .optional(),
-  message: z
-    .string()
-    .trim()
-    .transform(sanitizeText)
-    .pipe(
-      z
-        .string()
-        .min(10, "Message must be at least 10 characters")
-        .max(5000, "Message must not exceed 5000 characters"),
-    ),
-  turnstileToken: z.string().optional(),
-});
+export const ALLOWED_PROJECT_TYPES = [
+  "Build",
+  "Automate",
+  "Scale",
+  "Modernize",
+  "AI & Automation",
+  "Digital Products",
+  "Business Systems",
+  "Infrastructure & Security",
+  "AI Systems Engineering",
+] as const;
+
+export type AllowedProjectType = (typeof ALLOWED_PROJECT_TYPES)[number];
+
+/**
+ * Production schema for public inquiry submissions.
+ * Normalizes input keys (client_name/name, technical_details/message, etc.),
+ * sanitizes strings against XSS, and enforces strict boundary rules.
+ */
+export const createInquirySchema = z.preprocess(
+  (raw: unknown) => {
+    if (typeof raw !== "object" || raw === null) return {};
+    const r = raw as Record<string, unknown>;
+
+    return {
+      client_name: r.client_name ?? r.name,
+      email: r.email,
+      project_type: r.project_type ?? r.service ?? r.serviceOfInterest,
+      timeline: r.timeline,
+      custom_budget: r.custom_budget ?? r.budget,
+      technical_details: r.technical_details ?? r.message,
+      company: r.company,
+      phone: r.phone,
+      attachment_references:
+        r.attachment_references ?? r.attachments ?? r.attachment_ids ?? r.attachedFiles,
+      turnstile_token: r.turnstile_token ?? r.turnstileToken,
+    };
+  },
+  z.object({
+    client_name: z
+      .string()
+      .trim()
+      .transform(sanitizeText)
+      .pipe(
+        z
+          .string()
+          .min(2, "Client name must be at least 2 characters")
+          .max(100, "Client name must not exceed 100 characters"),
+      ),
+    email: z
+      .string()
+      .trim()
+      .email("Please provide a valid email address")
+      .max(255, "Email must not exceed 255 characters")
+      .toLowerCase(),
+    project_type: z
+      .enum(ALLOWED_PROJECT_TYPES, {
+        message: "Invalid project type. Untrusted project categories are rejected.",
+      })
+      .optional(),
+    timeline: z
+      .string()
+      .trim()
+      .transform(sanitizeText)
+      .pipe(z.string().max(100, "Timeline must not exceed 100 characters"))
+      .optional(),
+    custom_budget: z
+      .string()
+      .trim()
+      .transform(sanitizeText)
+      .pipe(z.string().max(100, "Budget specification must not exceed 100 characters"))
+      .optional(),
+    technical_details: z
+      .string()
+      .trim()
+      .transform(sanitizeText)
+      .pipe(
+        z
+          .string()
+          .min(10, "Technical details must be at least 10 characters")
+          .max(5000, "Technical details must not exceed 5,000 characters"),
+      ),
+    company: z
+      .string()
+      .trim()
+      .transform(sanitizeText)
+      .pipe(z.string().max(100, "Company name must not exceed 100 characters"))
+      .optional(),
+    phone: z
+      .string()
+      .trim()
+      .transform(sanitizeText)
+      .pipe(z.string().max(30, "Phone number must not exceed 30 characters"))
+      .optional(),
+    attachment_references: z
+      .array(
+        z.union([
+          z.string().trim().max(100),
+          z.object({ id: z.string().trim().max(100) }).transform((obj) => obj.id),
+        ]),
+      )
+      .max(5, "A maximum of 5 specification attachments are permitted")
+      .default([]),
+    turnstile_token: z.string().optional(),
+  }),
+);
 
 export type CreateInquiryInput = z.infer<typeof createInquirySchema>;
 

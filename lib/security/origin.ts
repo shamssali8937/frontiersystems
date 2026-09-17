@@ -41,12 +41,14 @@ export function validateOrigin(request: NextRequest): { valid: boolean; reason?:
     }
   }
 
-  // Development fallbacks
-  if (process.env.NODE_ENV === "development" || process.env.NODE_ENV === "test") {
+  // Development & local test fallbacks
+  if (process.env.NODE_ENV !== "production") {
     allowedHosts.add("localhost:3000");
     allowedHosts.add("localhost:3001");
     allowedHosts.add("localhost:3002");
     allowedHosts.add("127.0.0.1:3000");
+    allowedHosts.add("127.0.0.1:3001");
+    allowedHosts.add("127.0.0.1:3002");
   }
 
   if (origin) {

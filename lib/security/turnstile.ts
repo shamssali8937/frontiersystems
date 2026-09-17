@@ -8,7 +8,12 @@ export async function verifyTurnstileToken(
   const secret = process.env.TURNSTILE_SECRET_KEY;
 
   // In local development or testing without a key, allow bypass
-  if (!secret || secret === "dummy-secret-key" || process.env.NODE_ENV === "development") {
+  if (
+    !secret ||
+    secret === "dummy-secret-key" ||
+    process.env.NODE_ENV === "development" ||
+    process.env.NODE_ENV === "test"
+  ) {
     return { success: true };
   }
 

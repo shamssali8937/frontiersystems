@@ -143,7 +143,7 @@ async function runFormFlowTests() {
   // --- 6. Form Step Transition & Refresh Simulation ---
   console.log("\n--- Testing Back/Next & Storage Persistence Logic ---");
   let simulatedStep = 1;
-  let simulatedStorage: { step: number; values: ContactFormValues } = {
+  const simulatedStorage: { step: number; values: ContactFormValues } = {
     step: simulatedStep,
     values: { ...DEFAULT_FORM_VALUES },
   };

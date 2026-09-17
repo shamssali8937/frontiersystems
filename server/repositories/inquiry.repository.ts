@@ -5,13 +5,22 @@ import { logger } from "@/lib/logger";
 // Resilient in-memory store when external DB cluster is unreachable
 const fallbackInquiries = new Map<string, Inquiry>();
 
+function withTimeout<T>(promise: Promise<T>, ms: number = 2500): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error(`Database operation timed out after ${ms}ms`)), ms),
+    ),
+  ]);
+}
+
 /**
  * Inquiry repository.
  * Handles Prisma data access with high-availability fallback.
  */
 export async function createInquiry(data: Prisma.InquiryCreateInput): Promise<Inquiry> {
   try {
-    return await prisma.inquiry.create({ data });
+    return await withTimeout(prisma.inquiry.create({ data }), 2500);
   } catch (err) {
     logger.warn("Primary database inquiry insert failed; using resilient fallback storage", {
       error: err instanceof Error ? err.message : String(err),
@@ -27,7 +36,7 @@ export async function createInquiry(data: Prisma.InquiryCreateInput): Promise<In
       budget: typeof data.budget === "string" ? data.budget : null,
       message: data.message,
       status: "NEW",
-      internalNotes: null,
+      internalNotes: typeof data.internalNotes === "string" ? data.internalNotes : null,
       ipHash: typeof data.ipHash === "string" ? data.ipHash : null,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -39,9 +48,36 @@ export async function createInquiry(data: Prisma.InquiryCreateInput): Promise<In
 
 export async function findInquiryById(id: string): Promise<Inquiry | null> {
   try {
-    return await prisma.inquiry.findUnique({ where: { id } });
+    return await withTimeout(prisma.inquiry.findUnique({ where: { id } }), 2000);
   } catch {
     return fallbackInquiries.get(id) || null;
+  }
+}
+
+/**
+ * Query recent inquiries submitted by email within a given time window (in milliseconds).
+ * Used to implement sensible duplicate detection and idempotent confirmation.
+ */
+export async function findRecentInquiriesByEmail(
+  email: string,
+  windowMs: number = 5 * 60 * 1000,
+): Promise<Inquiry[]> {
+  const since = new Date(Date.now() - windowMs);
+  try {
+    return await withTimeout(
+      prisma.inquiry.findMany({
+        where: {
+          email: email.toLowerCase(),
+          createdAt: { gte: since },
+        },
+        orderBy: { createdAt: "desc" },
+      }),
+      2000,
+    );
+  } catch {
+    return Array.from(fallbackInquiries.values())
+      .filter((inq) => inq.email.toLowerCase() === email.toLowerCase() && inq.createdAt >= since)
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   }
 }
 
