@@ -59,10 +59,10 @@ export function ProcessSection() {
 
         {/* 4 Process Columns */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {PROCESS_STEPS.map((step) => (
+          {PROCESS_STEPS.map((step, idx) => (
             <article
               key={step.step}
-              className="relative flex flex-col justify-between p-7 rounded-sm bg-[#111416] border border-[#292D30] hover:border-[#3D4347] transition-colors"
+              className={`relative flex flex-col justify-between p-7 rounded-sm bg-[#111416] border border-[#292D30] hover:border-[#3D4347] transition-all duration-200 reveal-on-scroll stagger-${idx + 1}`}
             >
               <div>
                 {/* Step Index Header */}

@@ -253,6 +253,132 @@ body {
     background-color: #1e293b !important;
     color: #ffffff !important;
   }
+
+  /* Prevent text from vanishing to white on card/group hover in light mode */
+  .group:hover .group-hover\:text-white,
+  .hover\:text-white:hover {
+    color: var(--text-primary) !important;
+  }
+
+  /* Card Elevation & Shadows in Light Mode */
+  article,
+  .card {
+    background-color: var(--surface-primary) !important;
+    border-color: var(--border-subtle) !important;
+    box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.05), 0 1px 2px -1px rgba(15, 23, 42, 0.03);
+  }
+  article:hover,
+  .card:hover {
+    border-color: var(--border-hover) !important;
+    box-shadow: 0 8px 24px -4px rgba(15, 23, 42, 0.08), 0 4px 6px -2px rgba(15, 23, 42, 0.04);
+    transform: translateY(-2px);
+  }
+
+  /* Section Gradients Neutralization in Light Mode */
+  .bg-gradient-to-b,
+  .bg-gradient-to-r,
+  .bg-gradient-to-br,
+  .bg-gradient-to-t {
+    background-image: none !important;
+    background-color: var(--bg-primary) !important;
+  }
+
+  /* Badge Accents in Light Mode */
+  .bg-\[rgba\(99\,199\,217\,0\.1\)\] {
+    background-color: rgba(8, 145, 178, 0.08) !important;
+  }
+  .border-\[rgba\(99\,199\,217\,0\.3\)\] {
+    border-color: rgba(8, 145, 178, 0.25) !important;
+  }
+
+  /* Interactive Visualizer & SVG Blueprint Overrides in Light Mode */
+  circle[stroke="#292D30"] {
+    stroke: #cbd5e1 !important;
+  }
+  circle[fill="#171A1C"] {
+    fill: #f1f5f9 !important;
+  }
+  circle[fill="#111416"] {
+    fill: #ffffff !important;
+  }
+  text[fill="#0B0D0E"] {
+    fill: #0891b2 !important;
+  }
+}
+
+/* Universal Smooth Transitions for Interactive Elements */
+a,
+button,
+input,
+select,
+textarea,
+article,
+[role="tab"],
+[role="button"] {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}
+
+/* =========================================================================
+   Scroll Transitions & Reveal System
+   ========================================================================= */
+
+.scroll-reveal,
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.scroll-reveal.is-revealed,
+.reveal-on-scroll.is-revealed {
+  opacity: 1;
+  transform: translateY(0) translateX(0);
+}
+
+/* Stagger Delays for Grid Elements */
+.stagger-1 { transition-delay: 60ms; }
+.stagger-2 { transition-delay: 120ms; }
+.stagger-3 { transition-delay: 180ms; }
+.stagger-4 { transition-delay: 240ms; }
+
+/* =========================================================================
+   Interactive Hover Elevation & Dynamic Glow
+   ========================================================================= */
+
+article,
+.interactive-card {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.2s ease;
+}
+
+article:hover,
+.interactive-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(99, 199, 217, 0.2);
+  border-color: rgba(99, 199, 217, 0.45);
+}
+
+[data-theme="light"] article:hover,
+[data-theme="light"] .interactive-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 36px -10px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(8, 145, 178, 0.3);
+  border-color: rgba(8, 145, 178, 0.4);
+}
+
+/* Button Micro-Interactions */
+button:hover,
+a.inline-flex:hover {
+  transform: translateY(-1px);
+}
+button:active,
+a.inline-flex:active {
+  transform: translateY(0);
 }
 
 /* Reduced Motion Override */
@@ -264,5 +390,19 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  .scroll-reveal,
+  .reveal-on-scroll {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  article:hover,
+  .interactive-card:hover,
+  button:hover,
+  a.inline-flex:hover {
+    transform: none !important;
   }
 }

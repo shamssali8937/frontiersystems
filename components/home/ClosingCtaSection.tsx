@@ -10,7 +10,7 @@ export function ClosingCtaSection() {
       className="py-20 lg:py-32 border-t border-[#171A1C] bg-gradient-to-b from-[#0B0D0E] to-[#111416]"
     >
       <Container size="2xl">
-        <div className="relative rounded-sm bg-[#111416] border border-[#292D30] p-8 sm:p-12 lg:p-16 overflow-hidden">
+        <div className="relative rounded-sm bg-[#111416] border border-[#292D30] p-8 sm:p-12 lg:p-16 overflow-hidden reveal-on-scroll">
           {/* Subtle Background Accent Glow */}
           <div
             aria-hidden="true"

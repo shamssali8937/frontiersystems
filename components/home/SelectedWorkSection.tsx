@@ -51,7 +51,7 @@ export function SelectedWorkSection({ caseStudies }: SelectedWorkSectionProps) {
               return (
                 <article
                   key={study._id}
-                  className="flex flex-col justify-between p-8 sm:p-10 rounded-sm bg-[#111416] border border-[#292D30] hover:border-[#3D4347] transition-colors"
+                  className="flex flex-col justify-between p-8 sm:p-10 rounded-sm bg-[#111416] border border-[#292D30] hover:border-[#3D4347] transition-all duration-200 reveal-on-scroll"
                 >
                   <div className="space-y-4">
                     <div className="flex items-center justify-between text-xs font-mono text-[#6E7376]">

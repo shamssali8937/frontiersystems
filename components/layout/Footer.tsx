@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
+import { Logo } from "@/components/ui/Logo";
 
 const SOLUTION_LINKS = [
   { label: "AI Systems & Automation", href: "/solutions/ai-automation" },
@@ -14,6 +15,7 @@ const NAVIGATION_LINKS = [
   { label: "About Frontier Systems", href: "/company" },
   { label: "Enterprise Inquiries", href: "/contact" },
   { label: "Client Login", href: "/portal/login" },
+  { label: "Admin Console", href: "/admin/login" },
 ];
 
 /**
@@ -36,18 +38,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-12">
           {/* Column 1 & 2: Company Identity & Positioning */}
           <div className="lg:col-span-2 space-y-4">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 text-[#F5F5F3] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#63C7D9] rounded-sm py-0.5"
-              aria-label="Frontier Systems Home"
-            >
-              <span className="w-6 h-6 flex items-center justify-center border border-[#292D30] bg-[#111416] text-[#63C7D9] font-mono text-xs font-semibold rounded-sm">
-                FS
-              </span>
-              <span className="font-semibold text-base tracking-tight text-[#F5F5F3]">
-                Frontier Systems
-              </span>
-            </Link>
+            <Logo size="md" />
 
             <p className="text-[#A6AAAC] text-sm leading-relaxed max-w-sm">
               Premium B2B technology and AI systems engineering partner. Delivering
@@ -153,6 +144,12 @@ export function Footer() {
               className="hover:text-[#A6AAAC] transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#63C7D9] rounded-sm"
             >
               Security Posture
+            </Link>
+            <Link
+              href="/admin/login"
+              className="hover:text-[#63C7D9] text-[#6E7376] transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#63C7D9] rounded-sm font-mono text-[11px]"
+            >
+              Admin Access
             </Link>
           </nav>
         </div>

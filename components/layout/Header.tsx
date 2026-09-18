@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Container } from "@/components/ui/Container";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
+import { Logo } from "@/components/ui/Logo";
 
 interface NavItem {
   label: string;
@@ -230,18 +231,7 @@ export function Header() {
       <Container size="2xl">
         <div className="flex items-center justify-between">
           {/* Brand Logo */}
-          <Link
-            href="/"
-            className="flex items-center gap-2.5 text-[#F5F5F3] group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#63C7D9] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0D0E] rounded-xs py-1"
-            aria-label="Frontier Systems Home"
-          >
-            <span className="w-6 h-6 flex items-center justify-center border border-[#292D30] bg-[#111416] text-[#63C7D9] font-mono text-xs font-semibold rounded-xs transition-colors group-hover:border-[#63C7D9]">
-              FS
-            </span>
-            <span className="font-semibold text-base tracking-tight text-[#F5F5F3]">
-              Frontier Systems
-            </span>
-          </Link>
+          <Logo size="md" />
 
           {/* Desktop Navigation */}
           <nav
@@ -314,7 +304,7 @@ export function Header() {
                             {service.badge}
                           </span>
                         </div>
-                        <p className="text-xs font-semibold text-[#F5F5F3] group-hover:text-white mt-1">
+                        <p className="text-xs font-semibold text-[#F5F5F3] group-hover:text-[#63C7D9] transition-colors mt-1">
                           {service.title}
                         </p>
                         <p className="text-[11px] text-[#A6AAAC] leading-normal mt-0.5 line-clamp-2">

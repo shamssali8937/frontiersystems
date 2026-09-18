@@ -4,6 +4,7 @@ import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
+import { Logo } from "@/components/ui/Logo";
 
 function VerifyContent() {
   const searchParams = useSearchParams();
@@ -113,21 +114,10 @@ function VerifyContent() {
 
 export default function PortalVerifyPage() {
   return (
-    <div className="min-h-screen bg-[#0B0D0E] text-[#F5F5F3] flex flex-col justify-between py-12 px-4 sm:px-6 lg:px-8">
-      {/* Brand Header */}
-      <div className="w-full max-w-md mx-auto">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2.5 text-[#F5F5F3] group focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#63C7D9] rounded-sm py-1"
-          aria-label="Frontier Systems Home"
-        >
-          <span className="w-6 h-6 flex items-center justify-center border border-[#292D30] bg-[#111416] text-[#63C7D9] font-mono text-xs font-semibold rounded-sm transition-colors group-hover:border-[#63C7D9]">
-            FS
-          </span>
-          <span className="font-semibold text-base tracking-tight text-[#F5F5F3]">
-            Frontier Systems
-          </span>
-        </Link>
+    <div className="min-h-screen bg-[#0B0D0E] dark:bg-[#0B0D0E] bg-slate-50 text-[#F5F5F3] dark:text-[#F5F5F3] text-slate-900 flex flex-col justify-between py-12 px-4 sm:px-6 lg:px-8">
+      {/* Brand Header — Centered */}
+      <div className="w-full flex items-center justify-center py-2">
+        <Logo size="md" />
       </div>
 
       <Suspense

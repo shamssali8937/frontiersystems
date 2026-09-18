@@ -121,10 +121,10 @@ export function PillarsSection() {
 
         {/* 4 Pillars Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-          {PILLARS.map((pillar) => (
+          {PILLARS.map((pillar, idx) => (
             <article
               key={pillar.id}
-              className="group relative flex flex-col justify-between p-8 sm:p-10 rounded-sm bg-[#111416] border border-[#292D30] hover:border-[#3D4347] transition-colors duration-200"
+              className={`group relative flex flex-col justify-between p-8 sm:p-10 rounded-sm bg-[#111416] border border-[#292D30] hover:border-[#3D4347] transition-all duration-200 reveal-on-scroll stagger-${(idx % 2) + 1}`}
             >
               <div>
                 {/* Card Top Metadata Bar */}
@@ -146,7 +146,7 @@ export function PillarsSection() {
                 </div>
 
                 {/* Title & Tagline */}
-                <Heading as="h3" variant="h2" className="text-xl sm:text-2xl font-semibold mb-2 text-[#F5F5F3] group-hover:text-white transition-colors">
+                <Heading as="h3" variant="h2" className="text-xl sm:text-2xl font-semibold mb-2 text-[#F5F5F3] group-hover:text-[#63C7D9] transition-colors">
                   {pillar.title}
                 </Heading>
                 <div className="text-xs font-mono text-[#63C7D9] mb-4">

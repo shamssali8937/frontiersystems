@@ -14,7 +14,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   // On login page, render bare container without sidebar
   if (pathname === "/admin/login") {
-    return <div className="min-h-screen bg-[#0B0D0E] text-[#F5F5F3]">{children}</div>;
+    return <div className="min-h-screen bg-[#0B0D0E] dark:bg-[#0B0D0E] bg-slate-50 text-[#F5F5F3] dark:text-[#F5F5F3] text-slate-900">{children}</div>;
   }
 
   const handleLogout = async () => {

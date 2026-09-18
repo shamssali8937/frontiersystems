@@ -86,4 +86,70 @@ describe("Frontier Systems Dark & Light Theme Compatibility Audit", () => {
     const mobileActions = header.slice(header.indexOf("Mobile Actions"));
     assert.match(mobileActions, /<ThemeToggle\s+size="sm"\s*\/>/, "Mobile navigation must contain ThemeToggle");
   });
+
+  test("Logo component provides UK precision engineering mark with meridian geometry", () => {
+    const logoPath = path.join(rootDir, "components", "ui", "Logo.tsx");
+    assert.ok(fs.existsSync(logoPath), "Logo.tsx must exist");
+    const logo = fs.readFileSync(logoPath, "utf-8");
+
+    assert.match(logo, /Frontier/, "Logo must contain Frontier");
+    assert.match(logo, /Systems/, "Logo must contain Systems");
+    assert.match(logo, /London &bull; High Assurance/, "Logo must include British London heritage submark");
+    assert.match(logo, /M14 3L23 14L14 25L5 14L14 3Z/, "Logo must contain Meridian precision geometry");
+  });
+
+  test("InteractivePillarsVisualizer supports dynamic light and dark theme palettes", () => {
+    const visualizerPath = path.join(rootDir, "components", "home", "InteractivePillarsVisualizer.tsx");
+    assert.ok(fs.existsSync(visualizerPath), "InteractivePillarsVisualizer.tsx must exist");
+    const visualizer = fs.readFileSync(visualizerPath, "utf-8");
+
+    assert.match(visualizer, /useTheme/, "Visualizer must consume useTheme hook");
+    assert.match(visualizer, /resolvedTheme === "light"/, "Visualizer must check for light theme state");
+    assert.match(visualizer, /#0891B2/, "Visualizer must use WCAG AA calibrated light accent #0891B2");
+    assert.match(visualizer, /AI & Autonomous Automation/, "Visualizer must include Pillar 01");
+    assert.match(visualizer, /High-Assurance Digital Products/, "Visualizer must include Pillar 02");
+    assert.match(visualizer, /Mission-Critical Business Systems/, "Visualizer must include Pillar 03");
+    assert.match(visualizer, /Resilient Cloud & Security/, "Visualizer must include Pillar 04");
+  });
+
+  test("Footer contains Admin Console and Admin Access links to /admin/login", () => {
+    const footerPath = path.join(rootDir, "components", "layout", "Footer.tsx");
+    assert.ok(fs.existsSync(footerPath), "Footer.tsx must exist");
+    const footer = fs.readFileSync(footerPath, "utf-8");
+
+    assert.match(footer, /href="\/admin\/login"/, "Footer must link to /admin/login");
+    assert.match(footer, /Admin Console/, "Footer NAVIGATION_LINKS must include Admin Console");
+    assert.match(footer, /Admin Access/, "Footer bottom legal bar must include Admin Access");
+  });
+
+  test("globals.css implements scroll-reveal animations and hover transitions with reduced-motion support", () => {
+    const cssPath = path.join(rootDir, "app", "globals.css");
+    const css = fs.readFileSync(cssPath, "utf-8");
+
+    assert.match(css, /\.scroll-reveal/, "globals.css must contain .scroll-reveal class");
+    assert.match(css, /\.reveal-on-scroll/, "globals.css must contain .reveal-on-scroll class");
+    assert.match(css, /\.stagger-1/, "globals.css must contain stagger classes");
+    assert.match(css, /translateY\(-3px\)/, "globals.css must specify hover elevation transform");
+    assert.ok(css.includes(".scroll-reveal") && css.includes("prefers-reduced-motion"), "Must include reduced motion override for scroll reveal");
+  });
+
+  test("Portal and Admin login pages render brand Logo centered horizontally", () => {
+    const portalLoginPath = path.join(rootDir, "app", "portal", "login", "page.tsx");
+    const adminLoginPath = path.join(rootDir, "app", "admin", "login", "page.tsx");
+
+    assert.ok(fs.existsSync(portalLoginPath), "Portal login page must exist");
+    assert.ok(fs.existsSync(adminLoginPath), "Admin login page must exist");
+
+    const portal = fs.readFileSync(portalLoginPath, "utf-8");
+    const admin = fs.readFileSync(adminLoginPath, "utf-8");
+
+    // Check portal login has centered Logo
+    assert.match(portal, /<Logo\s+size="md"\s*\/>/, "Portal login must render Logo");
+    assert.match(portal, /justify-center[\s\S]*?<Logo/, "Portal login must wrap Logo in a justify-center container");
+
+    // Check admin login has centered Logo
+    assert.match(admin, /<Logo\s+size="md"\s*\/>/, "Admin login must render Logo");
+    assert.match(admin, /justify-center[\s\S]*?<Logo/, "Admin login must wrap Logo in a justify-center container");
+  });
 });
+

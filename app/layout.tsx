@@ -4,6 +4,7 @@ import { siteConfig, getOrganizationJsonLd, getWebSiteJsonLd } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { CookieConsent } from "@/components/ui/CookieConsent";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
+import { GlobalScrollObserver } from "@/components/ui/ScrollReveal";
 import "./globals.css";
 
 const inter = Inter({
@@ -84,6 +85,7 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <JsonLd data={[getOrganizationJsonLd(), getWebSiteJsonLd()]} />
+          <GlobalScrollObserver />
           {children}
           <CookieConsent />
         </ThemeProvider>

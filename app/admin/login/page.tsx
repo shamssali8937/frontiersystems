@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Logo } from "@/components/ui/Logo";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -40,25 +41,27 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0B0D0E] flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-[#111416] border border-[#292D30] rounded-sm p-8 space-y-6 shadow-2xl">
+    <div className="min-h-screen bg-[#0B0D0E] dark:bg-[#0B0D0E] bg-slate-50 text-[#F5F5F3] dark:text-[#F5F5F3] text-slate-900 flex flex-col justify-between py-12 px-4 sm:px-6 lg:px-8">
+      {/* Brand Header — Centered */}
+      <div className="w-full flex items-center justify-center py-2">
+        <Logo size="md" />
+      </div>
+
+      <div className="w-full max-w-md mx-auto my-auto bg-[#111416] dark:bg-[#111416] bg-white border border-[#292D30] dark:border-[#292D30] border-slate-200 rounded-sm p-8 space-y-6 shadow-2xl">
         {/* Terminal Header */}
-        <div className="space-y-2 border-b border-[#292D30] pb-5">
+        <div className="space-y-2 border-b border-[#292D30] dark:border-[#292D30] border-slate-200 pb-5">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-xs bg-[#63C7D9]" />
-              <span className="text-xs font-mono font-bold tracking-widest text-[#F5F5F3] uppercase">
-                FRONTIER SYSTEMS
-              </span>
-            </div>
-            <span className="text-[10px] font-mono text-[#63C7D9] px-2 py-0.5 rounded-xs bg-[#171A1C] border border-[#292D30]">
+            <span className="text-[10px] font-mono tracking-wider text-[#63C7D9] dark:text-[#63C7D9] text-[#0891B2] px-2 py-0.5 rounded-xs bg-[#171A1C] dark:bg-[#171A1C] bg-slate-100 border border-[#292D30] dark:border-[#292D30] border-slate-300">
+              ADMIN CONSOLE
+            </span>
+            <span className="text-[10px] font-mono text-[#63C7D9] dark:text-[#63C7D9] text-[#0891B2] px-2 py-0.5 rounded-xs bg-[#171A1C] dark:bg-[#171A1C] bg-slate-100 border border-[#292D30] dark:border-[#292D30] border-slate-300">
               AUTH_GATEWAY // V4
             </span>
           </div>
-          <h1 className="text-lg font-semibold text-[#F5F5F3] pt-1">
+          <h1 className="text-lg font-semibold text-[#F5F5F3] dark:text-[#F5F5F3] text-slate-900 pt-1">
             Administrative Access Portal
           </h1>
-          <p className="text-xs text-[#6E7376]">
+          <p className="text-xs text-[#6E7376] dark:text-[#6E7376] text-slate-500">
             High-assurance session authentication for senior engineering & operations personnel.
           </p>
         </div>
@@ -81,7 +84,7 @@ export default function AdminLoginPage() {
           <div className="space-y-1.5">
             <label
               htmlFor="email"
-              className="block text-xs font-mono text-[#A6AAAC] uppercase tracking-wider"
+              className="block text-xs font-mono text-[#A6AAAC] dark:text-[#A6AAAC] text-slate-600 uppercase tracking-wider"
             >
               Staff Email
             </label>
@@ -93,14 +96,14 @@ export default function AdminLoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="admin@frontiersystems.co"
-              className="w-full px-3 py-2.5 bg-[#0B0D0E] border border-[#292D30] rounded-xs text-xs font-mono text-[#F5F5F3] placeholder-[#6E7376] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#63C7D9] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0D0E] transition-colors"
+              className="w-full px-3 py-2.5 bg-[#0B0D0E] dark:bg-[#0B0D0E] bg-slate-50 border border-[#292D30] dark:border-[#292D30] border-slate-300 rounded-xs text-xs font-mono text-[#F5F5F3] dark:text-[#F5F5F3] text-slate-900 placeholder-[#6E7376] dark:placeholder-[#6E7376] placeholder-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#63C7D9] dark:focus-visible:ring-[#63C7D9] focus-visible:ring-[#0891B2] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0D0E] dark:focus-visible:ring-offset-[#0B0D0E] focus-visible:ring-offset-white transition-colors"
             />
           </div>
 
           <div className="space-y-1.5">
             <label
               htmlFor="password"
-              className="block text-xs font-mono text-[#A6AAAC] uppercase tracking-wider"
+              className="block text-xs font-mono text-[#A6AAAC] dark:text-[#A6AAAC] text-slate-600 uppercase tracking-wider"
             >
               Access Secret
             </label>
@@ -112,7 +115,7 @@ export default function AdminLoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••••••"
-              className="w-full px-3 py-2.5 bg-[#0B0D0E] border border-[#292D30] rounded-xs text-xs font-mono text-[#F5F5F3] placeholder-[#6E7376] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#63C7D9] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0D0E] transition-colors"
+              className="w-full px-3 py-2.5 bg-[#0B0D0E] dark:bg-[#0B0D0E] bg-slate-50 border border-[#292D30] dark:border-[#292D30] border-slate-300 rounded-xs text-xs font-mono text-[#F5F5F3] dark:text-[#F5F5F3] text-slate-900 placeholder-[#6E7376] dark:placeholder-[#6E7376] placeholder-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#63C7D9] dark:focus-visible:ring-[#63C7D9] focus-visible:ring-[#0891B2] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0D0E] dark:focus-visible:ring-offset-[#0B0D0E] focus-visible:ring-offset-white transition-colors"
             />
           </div>
 
@@ -133,10 +136,15 @@ export default function AdminLoginPage() {
         </form>
 
         {/* Security Notice */}
-        <div className="pt-4 border-t border-[#292D30] text-[10px] font-mono text-[#6E7376] space-y-1">
+        <div className="pt-4 border-t border-[#292D30] dark:border-[#292D30] border-slate-200 text-[10px] font-mono text-[#6E7376] dark:text-[#6E7376] text-slate-500 space-y-1">
           <div>RESTRICTED ACCESS — IP HASHES LOGGED</div>
           <div>All authentication transactions are monitored and cryptographically signed.</div>
         </div>
+      </div>
+
+      {/* Footer */}
+      <div className="w-full max-w-md mx-auto text-center text-xs text-[#6E7376] dark:text-[#6E7376] text-slate-500">
+        &copy; {new Date().getFullYear()} Frontier Systems Ltd. All rights reserved.
       </div>
     </div>
   );
