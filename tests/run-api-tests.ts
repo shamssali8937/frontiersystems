@@ -14,6 +14,7 @@ import { runApiTests } from "./api/inquiries.test";
 import { runSecurityTests } from "./security/security.test";
 import { runUploadSecurityTests } from "./upload-security.test";
 import { runEmailNotificationTests } from "./email-notification.test";
+import { runAdminPortalTests } from "./admin-portal.test";
 
 async function main() {
   console.log("=========================================");
@@ -45,8 +46,19 @@ async function main() {
     console.log(res);
   }
 
-  const totalPassed = apiRes.passed + secRes.passed + uploadRes.passed + emailRes.passed;
-  const totalFailed = apiRes.failed + secRes.failed + uploadRes.failed + emailRes.failed;
+  console.log("\n=========================================");
+  console.log("Running Frontier Systems Admin Portal & CRM Tests");
+  console.log("=========================================\n");
+
+  const adminRes = await runAdminPortalTests();
+  for (const res of adminRes.results) {
+    console.log(res);
+  }
+
+  const totalPassed =
+    apiRes.passed + secRes.passed + uploadRes.passed + emailRes.passed + adminRes.passed;
+  const totalFailed =
+    apiRes.failed + secRes.failed + uploadRes.failed + emailRes.failed + adminRes.failed;
 
   console.log("\n=========================================");
   console.log(`Global Suite Summary: ${totalPassed} passed, ${totalFailed} failed`);

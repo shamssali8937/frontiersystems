@@ -24,7 +24,7 @@ import { logger } from "@/lib/logger";
  * Maps any error into a safe standardized JSON error response.
  * Never exposes stack traces or sensitive database details to clients.
  */
-function handleControllerError(err: unknown) {
+export function handleControllerError(err: unknown) {
   if (err instanceof ZodError) {
     return jsonError(
       "VALIDATION_ERROR",
