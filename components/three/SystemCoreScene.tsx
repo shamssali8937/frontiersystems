@@ -302,10 +302,14 @@ export function SystemCoreScene() {
   }
 
   return (
-    <div
-      aria-hidden="true"
-      className="relative w-full h-full min-h-[360px] sm:min-h-[420px] lg:min-h-[480px] flex items-center justify-center overflow-hidden rounded-sm border border-[#292D30] bg-[#0B0D0E]/80 backdrop-blur-xs select-none"
-    >
+    <>
+      <p className="sr-only">
+        Interactive 3D visualization demonstrating Frontier Systems core architectural pipeline, dynamic nodes, and deterministic telemetry.
+      </p>
+      <div
+        aria-hidden="true"
+        className="relative w-full h-full min-h-[360px] sm:min-h-[420px] lg:min-h-[480px] flex items-center justify-center overflow-hidden rounded-sm border border-[#292D30] bg-[#0B0D0E]/80 backdrop-blur-xs select-none"
+      >
       <Canvas
         aria-hidden="true"
         gl={{
@@ -343,5 +347,6 @@ export function SystemCoreScene() {
         </span>
       </div>
     </div>
-  );
+  </>
+);
 }

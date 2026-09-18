@@ -131,12 +131,15 @@ export function Step3TechnicalDetails({ form }: Step3TechnicalDetailsProps) {
           aria-invalid={Boolean(errors.technicalDetails)}
           aria-describedby={errors.technicalDetails ? "tech-details-error" : undefined}
           {...register("technicalDetails")}
-          className="w-full px-4 py-3 rounded-sm bg-[#111416] border border-[#292D30] text-[#F5F5F3] placeholder-[#6E7376] text-sm focus:outline-none focus:border-[#63C7D9] focus:ring-1 focus:ring-[#63C7D9] transition-colors leading-relaxed resize-y"
+          className="w-full px-4 py-3 rounded-sm bg-[#111416] border border-[#292D30] text-[#F5F5F3] placeholder-[#6E7376] text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#63C7D9] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0D0E] transition-colors leading-relaxed resize-y"
         />
 
         {errors.technicalDetails && (
-          <p id="tech-details-error" role="alert" className="text-xs text-[#E85D5D] font-mono">
-            {errors.technicalDetails.message}
+          <p id="tech-details-error" role="alert" className="text-xs text-[#E85D5D] font-mono flex items-center gap-1.5">
+            <svg className="w-4 h-4 shrink-0 text-[#E85D5D]" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+            </svg>
+            <span>{errors.technicalDetails.message}</span>
           </p>
         )}
       </div>
@@ -200,8 +203,11 @@ export function Step3TechnicalDetails({ form }: Step3TechnicalDetailsProps) {
 
         {/* Upload Error Banner */}
         {uploadError && (
-          <p role="alert" className="text-xs text-[#E85D5D] font-mono">
-            {uploadError}
+          <p role="alert" className="text-xs text-[#E85D5D] font-mono flex items-center gap-1.5">
+            <svg className="w-4 h-4 shrink-0 text-[#E85D5D]" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+            </svg>
+            <span>{uploadError}</span>
           </p>
         )}
 

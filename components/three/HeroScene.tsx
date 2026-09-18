@@ -254,12 +254,16 @@ export function HeroScene() {
   }, []);
 
   return (
-    <div
-      ref={containerRef}
-      aria-hidden="true"
-      className="relative w-full h-full min-h-[360px] sm:min-h-[420px] lg:min-h-[480px] flex items-center justify-center overflow-hidden rounded-sm border border-[#292D30] bg-[#0B0D0E]/60 backdrop-blur-xs select-none"
-    >
-      <canvas ref={canvasRef} className="w-full h-full block" />
+    <>
+      <p className="sr-only">
+        Interactive 3D mathematical visualization representing distributed system topology, autonomous cluster nodes, and real-time state telemetry.
+      </p>
+      <div
+        ref={containerRef}
+        aria-hidden="true"
+        className="relative w-full h-full min-h-[360px] sm:min-h-[420px] lg:min-h-[480px] flex items-center justify-center overflow-hidden rounded-sm border border-[#292D30] bg-[#0B0D0E]/60 backdrop-blur-xs select-none"
+      >
+        <canvas ref={canvasRef} aria-hidden="true" className="w-full h-full block" />
 
       {/* Engineering Overlay Telemetry Details */}
       <div className="absolute top-3 left-4 flex items-center gap-2 pointer-events-none">
@@ -275,5 +279,6 @@ export function HeroScene() {
         </span>
       </div>
     </div>
-  );
+  </>
+);
 }

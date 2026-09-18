@@ -112,9 +112,12 @@ export default function PortalLoginPage() {
               {error && (
                 <div
                   role="alert"
-                  className="p-3 bg-[#1A0D0E] border border-[#521C1D] text-[#F87171] text-xs rounded-sm"
+                  className="p-3 bg-[#1A0D0E] border border-[#521C1D] text-[#F87171] text-xs rounded-sm flex items-center gap-2"
                 >
-                  {error}
+                  <svg className="w-4 h-4 shrink-0 text-[#F87171]" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                  </svg>
+                  <span>{error}</span>
                 </div>
               )}
 
@@ -133,14 +136,14 @@ export default function PortalLoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@enterprise.com"
-                  className="w-full h-11 px-3.5 bg-[#0B0D0E] border border-[#292D30] text-sm text-[#F5F5F3] placeholder-[#4D5358] rounded-sm focus:outline-none focus:border-[#63C7D9] focus:ring-1 focus:ring-[#63C7D9] transition-colors"
+                  className="w-full h-11 px-3.5 bg-[#0B0D0E] border border-[#292D30] text-sm text-[#F5F5F3] placeholder-[#4D5358] rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#63C7D9] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0D0E] transition-colors"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex items-center justify-center h-11 text-sm font-medium text-[#0B0D0E] bg-[#F5F5F3] hover:bg-white active:bg-[#E5E5E3] disabled:opacity-50 disabled:cursor-not-allowed rounded-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#63C7D9]"
+                className="w-full flex items-center justify-center h-11 text-sm font-medium text-[#0B0D0E] bg-[#F5F5F3] hover:bg-white active:bg-[#E5E5E3] disabled:opacity-50 disabled:cursor-not-allowed rounded-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#63C7D9] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0D0E]"
               >
                 {loading ? "Dispatching link..." : "Send Sign-In Link &rarr;"}
               </button>

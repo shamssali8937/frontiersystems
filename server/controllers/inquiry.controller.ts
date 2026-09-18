@@ -81,8 +81,14 @@ export async function handleCreateInquiry(request: NextRequest) {
     return response;
   }
 
+  let rawBody: unknown;
   try {
-    const rawBody = await request.json().catch(() => ({}));
+    rawBody = await request.json();
+  } catch {
+    return jsonError("BAD_REQUEST", "Malformed JSON syntax in request body", 400);
+  }
+
+  try {
     const validatedData = createInquirySchema.parse(rawBody);
 
     const result = await submitInquiry(validatedData, clientIp);

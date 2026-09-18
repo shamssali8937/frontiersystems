@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { PageContainer } from "@/components/layout";
-import { createMetadata } from "@/lib/seo";
+import { createMetadata, getBreadcrumbJsonLd } from "@/lib/seo";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { getCaseStudies } from "@/lib/sanity.queries";
 import { SOLUTIONS_DATA } from "@/lib/solutionsData";
 import { SolutionHero } from "@/components/solutions/SolutionHero";
@@ -54,8 +55,15 @@ export default async function SolutionSlugPage({ params }: PageProps) {
     (cs) => cs.relatedSolution?.slug?.current === slug
   );
 
+  const breadcrumbsJsonLd = getBreadcrumbJsonLd([
+    { name: "Home", url: "/" },
+    { name: "Solutions", url: "/solutions" },
+    { name: solution.title, url: `/solutions/${slug}` },
+  ]);
+
   return (
     <PageContainer>
+      <JsonLd data={breadcrumbsJsonLd} />
       {/* 1. HERO SECTION (Unique Single H1, Eyebrow, Supporting Copy, Badges) */}
       <SolutionHero solution={solution} />
 

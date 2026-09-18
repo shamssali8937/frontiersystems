@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import { siteConfig, getOrganizationJsonLd, getWebSiteJsonLd } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { CookieConsent } from "@/components/ui/CookieConsent";
+import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import "./globals.css";
 
 const inter = Inter({
@@ -65,17 +66,27 @@ export default function RootLayout({
   return (
     <html
       lang="en-GB"
+      data-theme="dark"
       className={inter.variable}
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('fs_theme');var d=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';var r=(t==='light'||t==='dark')?t:(t==='system'?d:d);document.documentElement.setAttribute('data-theme',r);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();`,
+          }}
+        />
+      </head>
       <body
         suppressHydrationWarning
         className="bg-[#0B0D0E] text-[#F5F5F3] font-sans antialiased"
       >
-        <JsonLd data={[getOrganizationJsonLd(), getWebSiteJsonLd()]} />
-        {children}
-        <CookieConsent />
+        <ThemeProvider>
+          <JsonLd data={[getOrganizationJsonLd(), getWebSiteJsonLd()]} />
+          {children}
+          <CookieConsent />
+        </ThemeProvider>
       </body>
     </html>
   );

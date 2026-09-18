@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { ContactFormValues, GoalOption } from "@/lib/validation/contact-form.schema";
 import { Heading } from "@/components/ui/Heading";
@@ -45,6 +46,26 @@ const GOALS: Array<{
 export function Step1Goal({ form }: Step1GoalProps) {
   const selectedGoal = form.watch("goal");
   const error = form.formState.errors.goal;
+  const buttonRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  const handleKeyDown = (e: React.KeyboardEvent, index: number) => {
+    let nextIndex = index;
+    if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+      e.preventDefault();
+      nextIndex = (index + 1) % GOALS.length;
+    } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+      e.preventDefault();
+      nextIndex = (index - 1 + GOALS.length) % GOALS.length;
+    } else {
+      return;
+    }
+
+    const nextGoal = GOALS[nextIndex]?.id;
+    if (nextGoal) {
+      form.setValue("goal", nextGoal, { shouldValidate: true, shouldDirty: true });
+      buttonRefs.current[nextIndex]?.focus();
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -63,15 +84,21 @@ export function Step1Goal({ form }: Step1GoalProps) {
         aria-describedby={error ? "goal-error" : undefined}
         className="grid grid-cols-1 md:grid-cols-2 gap-4"
       >
-        {GOALS.map((goal) => {
+        {GOALS.map((goal, index) => {
           const isSelected = selectedGoal === goal.id;
+          const isFocusable = isSelected || (!selectedGoal && index === 0);
 
           return (
             <button
               key={goal.id}
+              ref={(el) => {
+                buttonRefs.current[index] = el;
+              }}
               type="button"
               role="radio"
+              tabIndex={isFocusable ? 0 : -1}
               aria-checked={isSelected}
+              onKeyDown={(e) => handleKeyDown(e, index)}
               onClick={() => {
                 form.setValue("goal", goal.id, { shouldValidate: true, shouldDirty: true });
               }}
@@ -79,7 +106,7 @@ export function Step1Goal({ form }: Step1GoalProps) {
                 isSelected
                   ? "bg-[#171A1C] border-[#63C7D9] shadow-[0_0_20px_rgba(99,199,217,0.1)] ring-1 ring-[#63C7D9]"
                   : "bg-[#111416] border-[#292D30] hover:border-[#3D4347] hover:bg-[#14171A]"
-              } focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#63C7D9]`}
+              } focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#63C7D9] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0D0E]`}
             >
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
@@ -113,8 +140,11 @@ export function Step1Goal({ form }: Step1GoalProps) {
       </div>
 
       {error && (
-        <p id="goal-error" role="alert" className="text-xs text-[#E85D5D] font-mono">
-          {error.message}
+        <p id="goal-error" role="alert" className="text-xs text-[#E85D5D] font-mono flex items-center gap-1.5">
+          <svg className="w-4 h-4 shrink-0 text-[#E85D5D]" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+          </svg>
+          <span>Selection required: {error.message}</span>
         </p>
       )}
     </div>

@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { UseFormReturn } from "react-hook-form";
 import {
   ContactFormValues,
@@ -18,6 +19,24 @@ export function Step2TimelineBudget({ form }: Step2TimelineBudgetProps) {
     formState: { errors },
   } = form;
   const selectedTimeline = watch("timeline");
+  const timelineRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  const handleTimelineKeyDown = (e: React.KeyboardEvent, index: number) => {
+    let nextIndex = index;
+    if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+      e.preventDefault();
+      nextIndex = (index + 1) % TIMELINE_OPTIONS.length;
+    } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+      e.preventDefault();
+      nextIndex = (index - 1 + TIMELINE_OPTIONS.length) % TIMELINE_OPTIONS.length;
+    } else {
+      return;
+    }
+
+    const nextTimeline = TIMELINE_OPTIONS[nextIndex] as TimelineOption;
+    setValue("timeline", nextTimeline, { shouldValidate: true, shouldDirty: true });
+    timelineRefs.current[nextIndex]?.focus();
+  };
 
   return (
     <div className="space-y-8">
@@ -38,17 +57,24 @@ export function Step2TimelineBudget({ form }: Step2TimelineBudgetProps) {
         <div
           role="radiogroup"
           aria-label="Expected Delivery Horizon"
+          aria-describedby={errors.timeline ? "timeline-error" : undefined}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"
         >
-          {TIMELINE_OPTIONS.map((timeline) => {
+          {TIMELINE_OPTIONS.map((timeline, index) => {
             const isSelected = selectedTimeline === timeline;
+            const isFocusable = isSelected || (!selectedTimeline && index === 0);
 
             return (
               <button
                 key={timeline}
+                ref={(el) => {
+                  timelineRefs.current[index] = el;
+                }}
                 type="button"
                 role="radio"
+                tabIndex={isFocusable ? 0 : -1}
                 aria-checked={isSelected}
+                onKeyDown={(e) => handleTimelineKeyDown(e, index)}
                 onClick={() => {
                   setValue("timeline", timeline as TimelineOption, {
                     shouldValidate: true,
@@ -59,7 +85,7 @@ export function Step2TimelineBudget({ form }: Step2TimelineBudgetProps) {
                   isSelected
                     ? "bg-[#171A1C] border-[#63C7D9] text-[#63C7D9] ring-1 ring-[#63C7D9]"
                     : "bg-[#111416] border-[#292D30] text-[#A6AAAC] hover:border-[#3D4347] hover:text-[#F5F5F3]"
-                } focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#63C7D9]`}
+                } focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#63C7D9] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0D0E]`}
               >
                 {timeline}
               </button>
@@ -67,13 +93,16 @@ export function Step2TimelineBudget({ form }: Step2TimelineBudgetProps) {
           })}
         </div>
         {errors.timeline && (
-          <p role="alert" className="text-xs text-[#E85D5D] font-mono">
-            {errors.timeline.message}
+          <p id="timeline-error" role="alert" className="text-xs text-[#E85D5D] font-mono flex items-center gap-1.5">
+            <svg className="w-4 h-4 shrink-0 text-[#E85D5D]" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+            </svg>
+            <span>{errors.timeline.message}</span>
           </p>
         )}
       </div>
 
-      {/* Budget Open-Text Field (SRS Mandate) */}
+      {/* Budget Open-Text Field */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <label htmlFor="budget-field" className="block text-sm font-medium text-[#F5F5F3]">
@@ -96,13 +125,16 @@ export function Step2TimelineBudget({ form }: Step2TimelineBudgetProps) {
             aria-invalid={Boolean(errors.budget)}
             aria-describedby={errors.budget ? "budget-error" : undefined}
             {...register("budget")}
-            className="w-full px-4 py-3 rounded-sm bg-[#111416] border border-[#292D30] text-[#F5F5F3] placeholder-[#6E7376] text-sm focus:outline-none focus:border-[#63C7D9] focus:ring-1 focus:ring-[#63C7D9] transition-colors"
+            className="w-full px-4 py-3 rounded-sm bg-[#111416] border border-[#292D30] text-[#F5F5F3] placeholder-[#6E7376] text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#63C7D9] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0D0E] transition-colors"
           />
         </div>
 
         {errors.budget && (
-          <p id="budget-error" role="alert" className="text-xs text-[#E85D5D] font-mono">
-            {errors.budget.message}
+          <p id="budget-error" role="alert" className="text-xs text-[#E85D5D] font-mono flex items-center gap-1.5">
+            <svg className="w-4 h-4 shrink-0 text-[#E85D5D]" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+            </svg>
+            <span>{errors.budget.message}</span>
           </p>
         )}
       </div>
