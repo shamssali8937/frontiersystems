@@ -6,21 +6,239 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
-// ============================================================
-// PLACEHOLDER MODELS
-// Full schema will be defined in a later phase.
-// ============================================================
+enum InquiryStatus {
+  NEW
+  UNDER_REVIEW
+  CONTACTED
+  QUALIFIED
+  WON
+  LOST
+  ARCHIVED
+}
 
-/// Tracks general-purpose audit/health records.
-/// Replace / extend with actual domain models.
+model Inquiry {
+  id            String              @id @default(cuid())
+  name          String
+  email         String
+  company       String?
+  phone         String?
+  service       String?
+  budget        String?
+  message       String
+  status        InquiryStatus       @default(NEW)
+  internalNotes String?
+  ipHash        String?
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  attachments   InquiryAttachment[]
+  projects      Project[]
+  activities    LeadActivity[]
+
+  @@index([status])
+  @@index([createdAt])
+  @@map("inquiries")
+}
+
+model InquiryAttachment {
+  id                String    @id @default(cuid())
+  inquiryId         String?   @map("inquiry_id")
+  storageKey        String    @unique @map("storage_key")
+  originalFilename  String    @map("original_filename")
+  sanitizedFilename String    @map("sanitized_filename")
+  mimeType          String    @map("mime_type")
+  sizeBytes         Int       @map("size_bytes")
+  sha256            String    @map("sha256")
+  storageProvider   String    @default("cloudinary") @map("storage_provider")
+  storageBucket     String    @default("frontiersystems/inquiries") @map("storage_bucket")
+  createdAt         DateTime  @default(now()) @map("created_at")
+
+  inquiry           Inquiry?  @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
+
+  @@index([inquiryId])
+  @@index([storageKey])
+  @@map("inquiry_attachments")
+}
+
 model HealthCheck {
   id        String   @id @default(cuid())
   status    String
   checkedAt DateTime @default(now())
 
   @@map("health_checks")
+}
+
+// -----------------------------------------------------------------------------
+// Customer Portal & Client Relationship Management
+// -----------------------------------------------------------------------------
+
+model Customer {
+  id              String            @id @default(uuid())
+  email           String            @unique
+  name            String
+  companyName     String?           @map("company_name")
+  createdAt       DateTime          @default(now()) @map("created_at")
+  lastLoginAt     DateTime?         @map("last_login_at")
+
+  projects        Project[]
+  magicLinkTokens MagicLinkToken[]
+
+  @@index([email])
+  @@map("customers")
+}
+
+enum ProjectStatus {
+  ONBOARDING
+  IN_PROGRESS
+  REVIEW
+  DELIVERED
+  MAINTENANCE
+  ARCHIVED
+}
+
+model Project {
+  id          String             @id @default(uuid())
+  customerId  String             @map("customer_id")
+  inquiryId   String?            @map("inquiry_id")
+  name        String
+  status      ProjectStatus      @default(ONBOARDING)
+  summary     String?
+  createdAt   DateTime           @default(now()) @map("created_at")
+  updatedAt   DateTime           @updatedAt @map("updated_at")
+
+  customer    Customer           @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  inquiry     Inquiry?           @relation(fields: [inquiryId], references: [id], onDelete: SetNull)
+  milestones  ProjectMilestone[]
+  documents   ProjectDocument[]
+  invoices    Invoice[]
+
+  @@index([customerId])
+  @@index([status])
+  @@index([inquiryId])
+  @@map("projects")
+}
+
+enum MilestoneStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETE
+}
+
+model ProjectMilestone {
+  id          String          @id @default(uuid())
+  projectId   String          @map("project_id")
+  title       String
+  description String?
+  status      MilestoneStatus @default(PENDING)
+  dueDate     DateTime?       @map("due_date")
+  completedAt DateTime?       @map("completed_at")
+  createdAt   DateTime        @default(now()) @map("created_at")
+
+  project     Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@map("project_milestones")
+}
+
+enum UploadedBy {
+  ADMIN
+  CUSTOMER
+}
+
+model ProjectDocument {
+  id         String     @id @default(uuid())
+  projectId  String     @map("project_id")
+  fileName   String     @map("file_name")
+  storageKey String     @map("storage_key")
+  mimeType   String     @map("mime_type")
+  fileSize   Int        @map("file_size")
+  uploadedBy UploadedBy @default(ADMIN) @map("uploaded_by")
+  createdAt  DateTime   @default(now()) @map("created_at")
+
+  project    Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([storageKey])
+  @@map("project_documents")
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  OVERDUE
+  VOID
+}
+
+model Invoice {
+  id            String        @id @default(uuid())
+  projectId     String        @map("project_id")
+  invoiceNumber String        @unique @map("invoice_number")
+  status        InvoiceStatus @default(DRAFT)
+  amountDue     Decimal       @db.Decimal(10, 2) @map("amount_due")
+  currency      String        @default("GBP")
+  issuedAt      DateTime      @default(now()) @map("issued_at")
+  dueAt         DateTime      @map("due_at")
+  paidAt        DateTime?     @map("paid_at")
+  pdfStorageKey String?       @map("pdf_storage_key")
+  createdAt     DateTime      @default(now()) @map("created_at")
+
+  project       Project       @relation(fields: [projectId], references: [id], onDelete: Restrict)
+
+  @@index([projectId])
+  @@index([status])
+  @@index([invoiceNumber])
+  @@map("invoices")
+}
+
+model MagicLinkToken {
+  id         String    @id @default(uuid())
+  customerId String    @map("customer_id")
+  tokenHash  String    @map("token_hash")
+  expiresAt  DateTime  @map("expires_at")
+  usedAt     DateTime? @map("used_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+
+  customer   Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([customerId])
+  @@index([tokenHash])
+  @@index([expiresAt])
+  @@map("magic_link_tokens")
+}
+
+enum AdminRole {
+  ADMIN
+  SUPERADMIN
+}
+
+model AdminUser {
+  id           String     @id @default(uuid())
+  email        String     @unique
+  passwordHash String     @map("password_hash")
+  role         AdminRole  @default(ADMIN)
+  createdAt    DateTime   @default(now()) @map("created_at")
+  lastLoginAt  DateTime?  @map("last_login_at")
+
+  @@index([email])
+  @@map("admin_users")
+}
+
+model LeadActivity {
+  id          String   @id @default(uuid())
+  inquiryId   String?  @map("inquiry_id")
+  type        String
+  description String
+  metadata    String?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  inquiry     Inquiry? @relation(fields: [inquiryId], references: [id], onDelete: SetNull)
+
+  @@index([inquiryId])
+  @@index([createdAt])
+  @@map("lead_activities")
 }

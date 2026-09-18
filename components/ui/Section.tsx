@@ -32,6 +32,7 @@ export function Section({
   ...props
 }: SectionProps) {
   const verticalSpacing = spacingClasses[spacing];
+  const Comp = Component as React.ComponentType<React.HTMLAttributes<HTMLElement>>;
 
   const content = contain ? (
     <Container size={containerSize}>{children}</Container>
@@ -40,11 +41,11 @@ export function Section({
   );
 
   return (
-    <Component
+    <Comp
       className={`relative w-full ${verticalSpacing} ${className}`.trim()}
       {...props}
     >
       {content}
-    </Component>
+    </Comp>
   );
 }

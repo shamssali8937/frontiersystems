@@ -1,7 +1,18 @@
 /**
  * Root type re-exports.
- *
- * Import shared types from "@/types" for convenience.
- * Keep domain-specific types co-located with their feature module.
  */
-export type { ApiResponse, ApiSuccessResponse, ApiErrorResponse, PaginationMeta, PaginatedResponse } from "./api";
+export type {
+  ApiResponse,
+  ApiSuccessResponse,
+  ApiErrorResponse,
+  ApiErrorCode,
+} from "./api";
+export { jsonSuccess, jsonError } from "./api";
+export type {
+  SanityImage,
+  SanitySeo,
+  SanitySlug,
+  SanitySolution,
+  SanityCaseStudy,
+  BusinessImpactMetric,
+} from "./sanity";

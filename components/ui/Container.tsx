@@ -29,13 +29,14 @@ export function Container({
   ...props
 }: ContainerProps) {
   const sizeClass = sizeClasses[size];
+  const Comp = Component as React.ComponentType<React.HTMLAttributes<HTMLElement>>;
 
   return (
-    <Component
+    <Comp
       className={`mx-auto w-full px-4 sm:px-6 lg:px-8 ${sizeClass} ${className}`.trim()}
       {...props}
     >
       {children}
-    </Component>
+    </Comp>
   );
 }
