@@ -8,7 +8,7 @@ const PROCESS_STEPS = [
     title: "Understand",
     phase: "DISCOVERY & AUDIT",
     description:
-      "We dissect existing architecture, analyze domain constraints, map operational threat vectors, and benchmark baseline latency and throughput metrics.",
+      "We dissect existing architecture, analyse domain constraints, map operational threat vectors, and benchmark baseline latency and throughput metrics.",
     deliverable: "System Feasibility & Threat Assessment",
   },
   {
@@ -32,8 +32,8 @@ const PROCESS_STEPS = [
     title: "Evolve",
     phase: "TELEMETRY & REFINEMENT",
     description:
-      "We instrument sub-millisecond telemetry, observe AI agent convergence, monitor distributed state consistency, and continually optimize performance under load.",
-    deliverable: "Real-Time Observability & Optimization",
+      "We instrument sub-millisecond telemetry, observe AI agent convergence, monitor distributed state consistency, and continually optimise performance under load. Once your project is underway, you'll have direct visibility into progress and documentation through your client portal.",
+    deliverable: "Real-Time Observability & Optimisation",
   },
 ];
 

@@ -19,7 +19,7 @@ export function CreateInvoiceModal({ projects }: CreateInvoiceModalProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [projectId, setProjectId] = useState(projects[0]?.id || "");
-  const [invoiceNumber, setInvoiceNumber] = useState(`FS-2026-${Math.floor(1000 + Math.random() * 9000)}`);
+  const [invoiceNumber, setInvoiceNumber] = useState("FS-2026-1001");
   const [amountDue, setAmountDue] = useState("10000.00");
   const [status, setStatus] = useState("DRAFT");
   const [loading, setLoading] = useState(false);

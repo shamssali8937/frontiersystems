@@ -34,15 +34,107 @@ if (typeof setInterval !== "undefined") {
 
 /** Pre-configured enterprise rate limit policies */
 export const RateLimitPolicies = {
-  INQUIRY_SUBMISSION: { limit: 5, windowMs: 15 * 60 * 1000 },   // 5 per 15 minutes per IP
-  FILE_UPLOAD: { limit: 10, windowMs: 10 * 60 * 1000 },          // 10 per 10 minutes per IP
-  ADMIN_WRITE: { limit: 30, windowMs: 60 * 1000 },               // 30 per minute
-  ADMIN_READ: { limit: 120, windowMs: 60 * 1000 },               // 120 per minute
-  AUTH_FAILURE: { limit: 5, windowMs: 15 * 60 * 1000 },          // 5 failures per 15 minutes per IP
+  INQUIRY_SUBMISSION: { limit: 5, windowMs: 15 * 60 * 1000 },      // 5 per 15 minutes per IP
+  FILE_UPLOAD: { limit: 10, windowMs: 10 * 60 * 1000 },             // 10 per 10 minutes per IP
+  ADMIN_WRITE: { limit: 30, windowMs: 60 * 1000 },                  // 30 per minute
+  ADMIN_READ: { limit: 120, windowMs: 60 * 1000 },                  // 120 per minute
+  ADMIN_LOGIN: { limit: 5, windowMs: 15 * 60 * 1000 },              // 5 login attempts per 15 minutes per IP
+  AUTH_FAILURE: { limit: 5, windowMs: 15 * 60 * 1000 },             // 5 failures per 15 minutes per IP
+  PORTAL_MAGIC_LINK_EMAIL: { limit: 3, windowMs: 15 * 60 * 1000 },  // 3 magic link requests per 15 mins per email
+  PORTAL_MAGIC_LINK_IP: { limit: 10, windowMs: 15 * 60 * 1000 },    // 10 magic link requests per 15 mins per IP
+  PORTAL_VERIFY: { limit: 10, windowMs: 15 * 60 * 1000 },           // 10 verification attempts per 15 mins per IP
 } as const;
 
 /**
- * Token bucket rate limiter with sliding expiration window.
+ * Check if Upstash Redis credentials are configured.
+ */
+function getUpstashCredentials(): { url: string; token: string } | null {
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!url || !token || url.includes("your-upstash-redis-url")) {
+    return null;
+  }
+  return { url: url.replace(/\/$/, ""), token };
+}
+
+/**
+ * Execute atomic Redis sliding-window algorithm over REST protocol.
+ */
+async function checkUpstashRateLimit(
+  key: string,
+  options: RateLimitOptions,
+): Promise<RateLimitStatus | null> {
+  const creds = getUpstashCredentials();
+  if (!creds) return null;
+
+  const now = Date.now();
+  const clearBefore = now - options.windowMs;
+  const ttlSeconds = Math.ceil(options.windowMs / 1000);
+
+  try {
+    // Pipeline: 1. Clean old entries, 2. Count current, 3. Refresh expiry
+    const pipelineReq = [
+      ["ZREMRANGEBYSCORE", key, "0", String(clearBefore)],
+      ["ZCARD", key],
+      ["EXPIRE", key, String(ttlSeconds)],
+    ];
+
+    const res = await fetch(`${creds.url}/pipeline`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${creds.token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(pipelineReq),
+      cache: "no-store",
+    });
+
+    if (!res.ok) return null;
+
+    const data = (await res.json()) as Array<{ result: unknown }>;
+    const currentCount = typeof data[1]?.result === "number" ? data[1].result : 0;
+
+    if (currentCount >= options.limit) {
+      const retryAfterSeconds = Math.max(1, Math.ceil(options.windowMs / 1000));
+      return {
+        allowed: false,
+        remaining: 0,
+        limit: options.limit,
+        resetTime: now + options.windowMs,
+        retryAfterSeconds,
+      };
+    }
+
+    // Add member to sorted set
+    const member = `${now}-${Math.random().toString(36).substring(2, 9)}`;
+    await fetch(`${creds.url}/pipeline`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${creds.token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify([
+        ["ZADD", key, String(now), member],
+        ["EXPIRE", key, String(ttlSeconds)],
+      ]),
+      cache: "no-store",
+    });
+
+    return {
+      allowed: true,
+      remaining: Math.max(0, options.limit - (currentCount + 1)),
+      limit: options.limit,
+      resetTime: now + options.windowMs,
+      retryAfterSeconds: 0,
+    };
+  } catch {
+    // If Upstash fails, return null to gracefully fallback to in-memory limiter
+    return null;
+  }
+}
+
+/**
+ * Token bucket rate limiter with sliding expiration window (synchronous local).
  */
 export function checkRateLimit(
   namespace: string,
@@ -89,6 +181,25 @@ export function checkRateLimit(
     resetTime: entry.resetTime,
     retryAfterSeconds,
   };
+}
+
+/**
+ * Durable, serverless-compatible rate limit check.
+ * Uses Upstash Redis if available; falls back to synchronous in-memory store.
+ */
+export async function checkRateLimitAsync(
+  namespace: string,
+  identifier: string,
+  options: RateLimitOptions = RateLimitPolicies.INQUIRY_SUBMISSION,
+): Promise<RateLimitStatus> {
+  const redisKey = `ratelimit:${namespace}:${identifier}`;
+  const upstashResult = await checkUpstashRateLimit(redisKey, options);
+
+  if (upstashResult !== null) {
+    return upstashResult;
+  }
+
+  return checkRateLimit(namespace, identifier, options);
 }
 
 /**

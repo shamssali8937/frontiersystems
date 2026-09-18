@@ -288,3 +288,96 @@ export function buildLeadEmailPayloadFromInquiry(
     submittedAt: inquiry.createdAt,
   };
 }
+
+export interface MagicLinkEmailPayload {
+  email: string;
+  clientName: string;
+  verifyUrl: string;
+  expiresInMinutes: number;
+}
+
+export const lastSentMagicLinks: Array<{ email: string; verifyUrl: string; sentAt: Date }> = [];
+
+/**
+ * Dispatches a passwordless magic link email for Customer Portal authentication.
+ *
+ * Requirements:
+ * - Clearly states it was requested for portal access.
+ * - Includes an expiry notice (e.g. 15 minutes).
+ * - Does NOT include any project/invoice details in the email body.
+ */
+export async function sendMagicLinkEmail(
+  payload: MagicLinkEmailPayload,
+): Promise<{ success: boolean; error?: string }> {
+  const fromAddress = process.env.SMTP_FROM || "Frontier Systems <desk@frontiersystems.co>";
+  const transport = getEmailTransport();
+
+  const subject = "Frontier Systems Client Portal Access Link";
+  const html = `
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 580px; margin: 0 auto; color: #F5F5F3; background: #0B0D0E; padding: 32px; border: 1px solid #292D30; border-radius: 4px;">
+      <div style="border-bottom: 1px solid #292D30; padding-bottom: 16px; margin-bottom: 24px;">
+        <span style="font-size: 11px; font-family: monospace; color: #63C7D9; letter-spacing: 0.15em; text-transform: uppercase;">FRONTIER SYSTEMS // CLIENT PORTAL</span>
+        <h2 style="margin: 8px 0 0 0; font-size: 20px; font-weight: 500; color: #F5F5F3; letter-spacing: -0.01em;">Secure Sign-In Link</h2>
+      </div>
+
+      <p style="font-size: 14px; line-height: 1.6; color: #A6AAAC; margin-bottom: 16px;">
+        Hello ${payload.clientName || "Client"},
+      </p>
+
+      <p style="font-size: 14px; line-height: 1.6; color: #A6AAAC; margin-bottom: 24px;">
+        A single-use authentication link was requested to access your Frontier Systems Client Portal. Click the button below to sign in directly:
+      </p>
+
+      <div style="margin-bottom: 28px;">
+        <a href="${payload.verifyUrl}" style="display: inline-block; background-color: #F5F5F3; color: #0B0D0E; padding: 12px 24px; font-size: 13px; font-weight: 600; text-decoration: none; border-radius: 2px; letter-spacing: 0.02em;">
+          Sign In to Client Portal &rarr;
+        </a>
+      </div>
+
+      <p style="font-size: 12px; line-height: 1.5; color: #6E7376; margin-bottom: 16px;">
+        Or paste this URL into your browser:<br/>
+        <a href="${payload.verifyUrl}" style="color: #63C7D9; word-break: break-all; font-family: monospace; font-size: 11px;">${payload.verifyUrl}</a>
+      </p>
+
+      <div style="background: #111416; border: 1px solid #292D30; border-radius: 2px; padding: 12px 14px; margin-bottom: 24px;">
+        <p style="margin: 0; font-size: 12px; color: #A6AAAC;">
+          <strong style="color: #F5F5F3;">Security Notice:</strong> This link is strictly single-use and will expire in <strong>${payload.expiresInMinutes} minutes</strong>. If you did not request this login link, you can safely disregard this email.
+        </p>
+      </div>
+
+      <div style="border-top: 1px solid #292D30; padding-top: 16px; font-size: 11px; color: #6E7376;">
+        <p style="margin: 0;">Frontier Systems Ltd &bull; High-Assurance Engineering &amp; AI Systems</p>
+        <p style="margin: 4px 0 0 0;">London, United Kingdom</p>
+      </div>
+    </div>
+  `;
+
+  // Record in memory for test verification
+  lastSentMagicLinks.push({
+    email: payload.email,
+    verifyUrl: payload.verifyUrl,
+    sentAt: new Date(),
+  });
+
+  try {
+    if (transport) {
+      await transport.sendMail({
+        from: fromAddress,
+        to: payload.email,
+        subject,
+        html,
+      });
+    } else {
+      logger.info("Magic link email dispatched (simulated)", {
+        recipient: payload.email,
+        verifyUrl: payload.verifyUrl,
+        expiresInMinutes: payload.expiresInMinutes,
+      });
+    }
+    return { success: true };
+  } catch (err) {
+    const errorMsg = err instanceof Error ? err.message : String(err);
+    logger.error("Failed to deliver magic link email", { error: errorMsg, recipient: payload.email });
+    return { success: false, error: errorMsg };
+  }
+}

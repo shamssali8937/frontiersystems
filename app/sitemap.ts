@@ -63,6 +63,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.8,
     },
+    {
+      url: `${siteConfig.url}/privacy-policy`,
+      lastModified: currentDate,
+      changeFrequency: "monthly",
+      priority: 0.3,
+    },
+    {
+      url: `${siteConfig.url}/cookie-policy`,
+      lastModified: currentDate,
+      changeFrequency: "monthly",
+      priority: 0.3,
+    },
+    {
+      url: `${siteConfig.url}/terms`,
+      lastModified: currentDate,
+      changeFrequency: "monthly",
+      priority: 0.3,
+    },
   ];
 
   let caseStudyRoutes: MetadataRoute.Sitemap = [];

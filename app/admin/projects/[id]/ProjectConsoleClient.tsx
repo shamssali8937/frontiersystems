@@ -65,7 +65,7 @@ export function ProjectConsoleClient({ project }: ProjectConsoleClientProps) {
   const [milestoneLoading, setMilestoneLoading] = useState(false);
 
   // New Invoice state
-  const [invoiceNumber, setInvoiceNumber] = useState(`FS-2026-${Math.floor(1000 + Math.random() * 9000)}`);
+  const [invoiceNumber, setInvoiceNumber] = useState("FS-2026-1001");
   const [amountDue, setAmountDue] = useState("5000.00");
   const [invoiceLoading, setInvoiceLoading] = useState(false);
 

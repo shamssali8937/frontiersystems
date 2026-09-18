@@ -16,7 +16,7 @@ import { authenticateAdmin } from "@/server/auth/admin.auth";
 import { enforcePermission } from "@/server/auth/authorization";
 import { getClientIp } from "@/lib/security/ip";
 import { validateOrigin } from "@/lib/security/origin";
-import { checkRateLimit, RateLimitPolicies, getRateLimitHeaders } from "@/lib/security/rate-limit";
+import { checkRateLimit, checkRateLimitAsync, RateLimitPolicies, getRateLimitHeaders } from "@/lib/security/rate-limit";
 import { jsonSuccess, jsonError } from "@/types/api";
 import { logger } from "@/lib/logger";
 
@@ -66,7 +66,7 @@ export async function handleCreateInquiry(request: NextRequest) {
 
   // 2. Rate limiting check (5 submissions per 15 minutes)
   const clientIp = getClientIp(request);
-  const rateLimitStatus = checkRateLimit("inquiry", clientIp, RateLimitPolicies.INQUIRY_SUBMISSION);
+  const rateLimitStatus = await checkRateLimitAsync("inquiry", clientIp, RateLimitPolicies.INQUIRY_SUBMISSION);
 
   if (!rateLimitStatus.allowed) {
     const response = jsonError(

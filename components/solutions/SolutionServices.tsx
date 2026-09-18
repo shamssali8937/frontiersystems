@@ -18,12 +18,12 @@ export function SolutionServices({ pillarTitle, services }: SolutionServicesProp
     >
       <Container size="2xl">
         <div className="max-w-3xl space-y-4 mb-16">
-          <Eyebrow>CORE SERVICES & SPECIALIZATIONS</Eyebrow>
+          <Eyebrow>CORE SERVICES & SPECIALISATIONS</Eyebrow>
           <Heading id="services-heading" as="h2" variant="h1">
             Engineered Sub-Offerings for {pillarTitle}
           </Heading>
           <p className="text-[#A6AAAC] text-base lg:text-lg leading-relaxed">
-            Every capability is executed with engineering rigor, deterministic schemas, and continuous
+            Every capability is executed with engineering rigour, deterministic schemas, and continuous
             validation against enterprise performance metrics.
           </p>
         </div>

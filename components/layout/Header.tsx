@@ -168,8 +168,15 @@ export function Header() {
             })}
           </nav>
 
-          {/* Desktop Direct CTA */}
+          {/* Desktop Direct Actions: Client Login (Ghost) + CTA */}
           <div className="hidden md:flex items-center gap-3">
+            <Link
+              href="/portal/login"
+              className="inline-flex items-center justify-center h-8 px-3 text-xs font-medium text-[#A6AAAC] hover:text-[#F5F5F3] border border-transparent hover:border-[#292D30] rounded-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#63C7D9]"
+              aria-label="Client Portal Login"
+            >
+              Client Login
+            </Link>
             <Link
               href="/contact"
               className="inline-flex items-center justify-center h-8 px-3.5 text-xs font-medium text-[#0B0D0E] bg-[#F5F5F3] hover:bg-white active:bg-[#E5E5E3] rounded-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#63C7D9]"
@@ -261,7 +268,15 @@ export function Header() {
             })}
           </nav>
 
-          <div className="pt-8 border-t border-[#292D30] flex flex-col gap-4">
+          <div className="pt-8 border-t border-[#292D30] flex flex-col gap-3">
+            <Link
+              href="/portal/login"
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-full flex items-center justify-center h-10 text-xs font-medium text-[#A6AAAC] hover:text-[#F5F5F3] border border-[#292D30] bg-[#111416] hover:bg-[#171A1C] rounded-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#63C7D9]"
+              aria-label="Client Portal Login"
+            >
+              Client Login
+            </Link>
             <Link
               href="/contact"
               onClick={() => setMobileMenuOpen(false)}

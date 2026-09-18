@@ -17,13 +17,13 @@ export function CompanyLifecycle() {
       eyebrow: "SECTION 05 // SYSTEM DISCOVERY & DOMAIN AUDIT",
       title: "Deconstruct Systems & Quantify Operational Constraints",
       description:
-        "Before writing code, we dissect your current systems architecture, analyze legacy dependencies, benchmark baseline throughput and latency, and map potential security vulnerabilities across all trust boundaries.",
+        "Before writing code, we dissect your current systems architecture, analyse legacy dependencies, benchmark baseline throughput and latency, and map potential security vulnerabilities across all trust boundaries.",
       deliverable: "System Feasibility & Threat Assessment",
       activities: [
         "Infrastructure topology analysis and CVE vulnerability scan",
-        "Legacy database schema normalization and bottleneck profiling",
+        "Legacy database schema normalisation and bottleneck profiling",
         "Deterministic latency and concurrency baseline benchmarking",
-        "Stakeholder domain modeling and SLA target definition",
+        "Stakeholder domain modelling and SLA target definition",
       ],
     },
     {
@@ -60,10 +60,10 @@ export function CompanyLifecycle() {
       num: "04",
       name: "Evolve",
       eyebrow: "SECTION 08 // OBSERVABILITY & CONTINUOUS REFINEMENT",
-      title: "Instrument Telemetry & Proactively Optimize Performance",
+      title: "Instrument Telemetry & Proactively Optimise Performance",
       description:
-        "Post-deployment, we instrument sub-millisecond telemetry, observe AI agent convergence, monitor distributed state consistency, and continually optimize performance under adverse operational loads.",
-      deliverable: "Real-Time Observability & Optimization Loops",
+        "Post-deployment, we instrument sub-millisecond telemetry, observe AI agent convergence, monitor distributed state consistency, and continually optimise performance under adverse operational loads.",
+      deliverable: "Real-Time Observability & Optimisation Loops",
       activities: [
         "OpenTelemetry distributed tracing and Prometheus alerting",
         "Continuous AI model drift and hallucination monitoring",

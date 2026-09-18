@@ -1,7 +1,7 @@
 import crypto from "crypto";
 import bcrypt from "bcryptjs";
 import { findAdminByEmail, findAdminById, updateAdminLastLogin } from "@/server/repositories/admin.repository";
-import { checkRateLimit, isRateLimited } from "@/lib/security/rate-limit";
+import { checkRateLimitAsync, RateLimitPolicies } from "@/lib/security/rate-limit";
 import type { AdminUser } from "@prisma/client";
 
 export const ADMIN_COOKIE_NAME = "fs_admin_session";
@@ -90,20 +90,19 @@ export async function authenticateAdminCredentials(
   passwordPlain: string,
   clientIp: string,
 ): Promise<{ user: AdminUser; token: string } | null> {
-  // Check rate limit on failed login attempts
-  if (isRateLimited("admin_login_ip", clientIp, { limit: 5, windowMs: 15 * 60 * 1000 })) {
+  // Check rate limit on login attempts
+  const rateLimitStatus = await checkRateLimitAsync("admin_login_ip", clientIp, RateLimitPolicies.ADMIN_LOGIN);
+  if (!rateLimitStatus.allowed) {
     return null;
   }
 
   const admin = await findAdminByEmail(email);
   if (!admin) {
-    checkRateLimit("admin_login_ip", clientIp, { limit: 5, windowMs: 15 * 60 * 1000 });
     return null;
   }
 
   const passwordMatches = bcrypt.compareSync(passwordPlain, admin.passwordHash);
   if (!passwordMatches) {
-    checkRateLimit("admin_login_ip", clientIp, { limit: 5, windowMs: 15 * 60 * 1000 });
     return null;
   }
 

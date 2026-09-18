@@ -13,6 +13,7 @@ const NAVIGATION_LINKS = [
   { label: "Case Studies & Work", href: "/work" },
   { label: "About Frontier Systems", href: "/company" },
   { label: "Enterprise Inquiries", href: "/contact" },
+  { label: "Client Login", href: "/portal/login" },
 ];
 
 /**
@@ -84,9 +85,9 @@ export function Footer() {
           {/* Column 4: Navigation */}
           <div className="space-y-3">
             <p className="text-xs font-semibold uppercase tracking-wider text-[#F5F5F3]">
-              Organization
+              Organisation
             </p>
-            <nav aria-label="Footer Organization Navigation">
+            <nav aria-label="Footer Organisation Navigation">
               <ul className="space-y-2.5">
                 {NAVIGATION_LINKS.map((link) => (
                   <li key={link.href}>
@@ -128,12 +129,18 @@ export function Footer() {
             &copy; {currentYear} Frontier Systems Ltd. All rights reserved. Registered in the United Kingdom.
           </p>
 
-          <nav aria-label="Legal Navigation" className="flex items-center gap-6">
+          <nav aria-label="Legal Navigation" className="flex flex-wrap items-center gap-6">
             <Link
-              href="/privacy"
+              href="/privacy-policy"
               className="hover:text-[#A6AAAC] transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#63C7D9] rounded-sm"
             >
               Privacy Policy
+            </Link>
+            <Link
+              href="/cookie-policy"
+              className="hover:text-[#A6AAAC] transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#63C7D9] rounded-sm"
+            >
+              Cookie Policy
             </Link>
             <Link
               href="/terms"

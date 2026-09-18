@@ -33,7 +33,7 @@ export function CompanyHero() {
           </Heading>
 
           <p className="text-[#A6AAAC] text-base sm:text-lg lg:text-xl leading-relaxed max-w-3xl">
-            Frontier Systems is a specialized engineering consultancy headquartered in London.
+            Frontier Systems is a specialised engineering consultancy headquartered in London.
             We partner with forward-looking enterprise leadership to design, build, and deploy
             deterministic technology platforms where reliability, security, and precision are absolute requirements.
           </p>

@@ -6,7 +6,7 @@ import {
   getUploadMetadata,
 } from "@/server/services/upload.service";
 import { ServiceError } from "@/server/services/inquiry.service";
-import { checkRateLimit, RateLimitPolicies, getRateLimitHeaders } from "@/lib/security/rate-limit";
+import { checkRateLimitAsync, RateLimitPolicies, getRateLimitHeaders } from "@/lib/security/rate-limit";
 import { getClientIp } from "@/lib/security/ip";
 import { validateOrigin } from "@/lib/security/origin";
 import { authenticateAdmin } from "@/server/auth/admin.auth";
@@ -32,7 +32,7 @@ export async function handleFileUpload(request: NextRequest) {
 
   // 2. Enforce Rate Limiting
   const clientIp = getClientIp(request);
-  const rateLimitStatus = checkRateLimit("upload", clientIp, RateLimitPolicies.FILE_UPLOAD);
+  const rateLimitStatus = await checkRateLimitAsync("upload", clientIp, RateLimitPolicies.FILE_UPLOAD);
 
   if (!rateLimitStatus.allowed) {
     const response = jsonError(

@@ -29,7 +29,7 @@ export function Container({
   ...props
 }: ContainerProps) {
   const sizeClass = sizeClasses[size];
-  const Comp = Component as any;
+  const Comp = Component as React.ComponentType<React.HTMLAttributes<HTMLElement>>;
 
   return (
     <Comp

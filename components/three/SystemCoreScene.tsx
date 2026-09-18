@@ -261,27 +261,30 @@ function SystemCoreRoot({ reducedMotion }: SystemCoreProps) {
  * SystemCoreScene — Enterprise 3D Hero Core with WebGL fail-safe and reduced motion.
  */
 export function SystemCoreScene() {
-  const [hasWebGL, setHasWebGL] = useState<boolean | null>(null);
-  const [reducedMotion, setReducedMotion] = useState(false);
-
-  useEffect(() => {
-    // Detect WebGL capability safely
+  const [hasWebGL] = useState<boolean | null>(() => {
+    if (typeof window === "undefined") return null;
     try {
       const testCanvas = document.createElement("canvas");
       const gl =
         testCanvas.getContext("webgl2") ||
         testCanvas.getContext("webgl") ||
         testCanvas.getContext("experimental-webgl");
-      setHasWebGL(Boolean(gl));
+      return Boolean(gl);
     } catch {
-      setHasWebGL(false);
+      return false;
     }
+  });
+  const [reducedMotion, setReducedMotion] = useState(() => {
+    if (typeof window !== "undefined" && window.matchMedia) {
+      return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    }
+    return false;
+  });
 
-    // Detect prefers-reduced-motion
+  useEffect(() => {
+    // Listen for prefers-reduced-motion changes
     if (typeof window !== "undefined" && window.matchMedia) {
       const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-      setReducedMotion(mediaQuery.matches);
-
       const listener = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
       mediaQuery.addEventListener("change", listener);
       return () => mediaQuery.removeEventListener("change", listener);

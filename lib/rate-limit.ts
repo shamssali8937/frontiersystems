@@ -1,15 +1,9 @@
 /**
- * Rate limiter stub.
- *
- * Production implementation should use Upstash Redis (`@upstash/ratelimit`)
- * or an equivalent distributed store. This stub provides a safe no-op
- * interface that can be swapped in without changing call sites.
- *
- * USAGE:
- *   import { rateLimit } from "@/lib/rate-limit";
- *   const result = await rateLimit(identifier);
- *   if (!result.success) return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+ * Rate limiter utility providing durable sliding window rate limiting.
+ * Powered by Upstash Redis REST protocol with local in-memory fallback.
  */
+
+import { checkRateLimitAsync, RateLimitOptions } from "@/lib/security/rate-limit";
 
 export interface RateLimitResult {
   success: boolean;
@@ -23,23 +17,24 @@ export interface RateLimitResult {
  * Check if an identifier (e.g. IP address, user ID) has exceeded the rate limit.
  *
  * @param identifier - A unique key per rate-limit scope (e.g. `"inquiry:${ip}"`).
+ * @param options - Optional custom limit and windowMs.
  */
-export async function rateLimit(identifier: string): Promise<RateLimitResult> {
-  // TODO: Replace this stub with Upstash Ratelimit or similar.
-  // Example:
-  //   import { Ratelimit } from "@upstash/ratelimit";
-  //   import { Redis } from "@upstash/redis";
-  //   const ratelimit = new Ratelimit({
-  //     redis: Redis.fromEnv(),
-  //     limiter: Ratelimit.slidingWindow(10, "1 m"),
-  //   });
-  //   return ratelimit.limit(identifier);
+export async function rateLimit(
+  identifier: string,
+  options?: RateLimitOptions,
+): Promise<RateLimitResult> {
+  const [namespace, ...rest] = identifier.split(":");
+  const id = rest.join(":") || identifier;
 
-  void identifier; // suppress unused variable warning in stub
+  const status = await checkRateLimitAsync(
+    namespace || "default",
+    id,
+    options || { limit: 10, windowMs: 60_000 },
+  );
 
   return {
-    success: true,
-    remaining: 999,
-    reset: Date.now() + 60_000,
+    success: status.allowed,
+    remaining: status.remaining,
+    reset: status.resetTime,
   };
 }

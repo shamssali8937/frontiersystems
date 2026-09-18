@@ -112,9 +112,23 @@ export function getOrganizationJsonLd() {
     description: siteConfig.description,
     address: {
       "@type": "PostalAddress",
-      addressCountry: siteConfig.address.addressCountry,
-      addressLocality: siteConfig.address.addressLocality,
+      streetAddress: "[UK_STREET_ADDRESS: 100 Bishopsgate, Level 24]",
+      addressLocality: "London",
+      postalCode: "[UK_POSTAL_CODE: EC2N 4AG]",
+      addressCountry: "GB",
     },
+    telephone: "[UK_TELEPHONE: +44 (0)20 7946 0990]",
+    email: "desk@frontiersystems.co",
+    areaServed: [
+      {
+        "@type": "Country",
+        name: "United Kingdom",
+      },
+      {
+        "@type": "GeoShape",
+        name: "Global Enterprise",
+      },
+    ],
     sameAs: [
       `https://twitter.com/${siteConfig.twitterHandle.replace("@", "")}`,
       "https://www.linkedin.com/company/frontier-systems",

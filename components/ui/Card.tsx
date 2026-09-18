@@ -37,7 +37,7 @@ export function Card({
   children,
   ...props
 }: CardProps) {
-  const Comp = Component as any;
+  const Comp = Component as React.ComponentType<React.HTMLAttributes<HTMLElement>>;
   return (
     <Comp
       className={`rounded-sm relative ${variantClasses[variant]} ${paddingClasses[padding]} ${className}`.trim()}

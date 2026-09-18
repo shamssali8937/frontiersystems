@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { siteConfig, getOrganizationJsonLd, getWebSiteJsonLd } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { CookieConsent } from "@/components/ui/CookieConsent";
 import "./globals.css";
 
 const inter = Inter({
@@ -63,7 +64,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="en-GB"
       className={inter.variable}
       data-scroll-behavior="smooth"
       suppressHydrationWarning
@@ -74,6 +75,7 @@ export default function RootLayout({
       >
         <JsonLd data={[getOrganizationJsonLd(), getWebSiteJsonLd()]} />
         {children}
+        <CookieConsent />
       </body>
     </html>
   );
