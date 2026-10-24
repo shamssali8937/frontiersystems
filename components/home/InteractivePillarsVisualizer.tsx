@@ -1,8 +1,10 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { useTheme } from "@/components/theme/ThemeProvider";
+
+const emptySubscribe = () => () => {};
 
 interface Pillar {
   id: string;
@@ -112,7 +114,12 @@ const AUTO_ROTATE_INTERVAL = 5000; // 5 seconds per pillar
 
 export function InteractivePillarsVisualizer() {
   const { resolvedTheme } = useTheme();
-  const isLight = resolvedTheme === "light";
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false,
+  );
+  const isLight = mounted && resolvedTheme === "light";
 
   const [activeIdx, setActiveIdx] = useState(0);
   const [isPaused, setIsPaused] = useState(false);

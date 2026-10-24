@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PortalNav } from "./PortalNav";
+import { PortalNav } from "@/components/portal/PortalNav";
 
 export const metadata: Metadata = {
   title: "Client Portal | Frontier Systems",
